@@ -191,10 +191,12 @@ def first_screen(lang, base, langs_nav, checked, nv, ns, nk):
       </div>
     </section>
     <section class="right">
-      <div class="field" id="field">
-        <canvas id="terrain" aria-hidden="true"></canvas>
-        <svg id="map" role="group" aria-label="{E(t['mapcap'])}"></svg>
-        <p class="mapcap">{E(t['mapcap'])}</p>
+      <div class="field-w">
+        <p class="mapcap">{E(t['mapcap'])} <span class="swipe">{E(t['swipe'])}</span></p>
+        <div class="field" id="field">
+          <canvas id="terrain" aria-hidden="true"></canvas>
+          <svg id="map" role="group" aria-label="{E(t['mapcap'])}"></svg>
+        </div>
       </div>
       <div class="console">
         <form class="q" id="qf" role="search">
