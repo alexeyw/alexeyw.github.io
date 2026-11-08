@@ -373,6 +373,20 @@ def browser(*args):
         subprocess.run([CHROME, '--headless=new', '--disable-gpu', '--hide-scrollbars', f'--user-data-dir={profile}', *args], check=True, capture_output=True, timeout=120)
 
 
+def snapshot_preview(target):
+    """Headless virtual time delivers only a few animation frames, too few for the terrain to rise,
+    so the social preview comes from a temporary copy of the page whose frames are driven by hand.
+    ResizeObserver is off in that copy: a resize just before the capture would clear the canvas."""
+    driver = (f'<base href="{ROOT.as_uri()}/"><script>window.ResizeObserver=class{{observe(){{}}unobserve(){{}}disconnect(){{}}}};'
+              'window.__q=[];window.requestAnimationFrame=f=>{window.__q.push(f);return 1};'
+              'setTimeout(()=>{let t=1000;for(let k=0;k<150;k++){t+=40;const q=window.__q;window.__q=[];q.forEach(f=>f(t))}},5000);</script>')
+    copy = (ROOT / 'index.html').read_text().replace('<head>', '<head>' + driver, 1)
+    with tempfile.TemporaryDirectory() as tmp:
+        page = pathlib.Path(tmp) / 'preview.html'
+        page.write_text(copy)
+        browser('--window-size=1200,630', f'--screenshot={target}', '--virtual-time-budget=9000', page.as_uri())
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--offline', action='store_true')
@@ -402,7 +416,7 @@ def main():
     if not a.no_browser:
         url = (ROOT / 'index.html').as_uri()
         browser('--no-pdf-header-footer', f'--print-to-pdf={ROOT / "Aleksei_Volodin_CV.pdf"}', '--virtual-time-budget=9000', url)
-        browser('--window-size=1200,630', f'--screenshot={assets / "og.png"}', '--virtual-time-budget=9000', url)
+        snapshot_preview(assets / 'og.png')
         print('wrote CV pdf', (ROOT / 'Aleksei_Volodin_CV.pdf').stat().st_size, 'og', (assets / 'og.png').stat().st_size)
 
 
