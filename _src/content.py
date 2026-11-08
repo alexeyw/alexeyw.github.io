@@ -358,3 +358,17 @@ CAPS = [
 ]
 
 CERT = 'Security Skilled, 2025'
+
+# ---------- the 2003-2012 record opens in a window of its own era, in the reader's language ----------
+_EDU = 'BS in Computer Science, Serpukhov Technical College'
+LEGACY = {
+    'en': {'title': 'Catalog: Eras — 2003–2012', 'close': 'Close', 'menu': ['File', 'Operations', 'Catalogs', 'Reports', 'Help'],
+           'rows': [('Code', '000000001'), ('Period', '2003 – 2012'), ('Position', 'Analyst, software engineer, freelance'), ('Stack', '1C · C++ · SQL'), ('Education', _EDU), ('Status', 'Moved to archive')],
+           'msg': 'Document posted. Era closed, subject moved on to Android.'},
+    'es': {'title': 'Catálogo: Épocas — 2003–2012', 'close': 'Cerrar', 'menu': ['Archivo', 'Operaciones', 'Catálogos', 'Informes', 'Ayuda'],
+           'rows': [('Código', '000000001'), ('Período', '2003 – 2012'), ('Cargo', 'Analista, ingeniero de software, freelance'), ('Tecnologías', '1C · C++ · SQL'), ('Educación', _EDU), ('Estado', 'Movido al archivo')],
+           'msg': 'Documento contabilizado. Época cerrada, el sujeto pasó a Android.'},
+    'ru': {'title': 'Справочник: Эпохи — 2003–2012', 'close': 'Закрыть', 'menu': ['Файл', 'Операции', 'Справочники', 'Отчеты', 'Помощь'],
+           'rows': [('Код', '000000001'), ('Период', '2003 – 2012'), ('Должность', 'Аналитик, инженер ПО, фриланс'), ('Стек', '1С · C++ · SQL'), ('Образование', _EDU), ('Статус', 'Перемещено в архив')],
+           'msg': 'Документ проведен. Эпоха закрыта, субъект ушел в Android.'},
+}

@@ -292,6 +292,9 @@ def doc_html(lang, base, fill, checked):
 def dialogs(lang):
     t = C.UI[lang]
     args = E(json.dumps({'to': 'Aleksei Volodin', 'channel': 'email', 'risk': t['risk']}, ensure_ascii=False, indent=2))
+    old = C.LEGACY[lang]
+    menu = ''.join(f'<span>{E(m)}</span>' for m in old['menu'])
+    rows = ''.join(f'<div class="r"><span>{E(k)}:</span><div class="i">{E(v)}</div></div>' for k, v in old['rows'])
     return f'''<dialog id="approve" aria-labelledby="apT"><div class="ap">
   <h2 id="apT">{E(t['apT'])}</h2>
   <div id="apAsk" class="ap-s"><p>{t['apQ']}</p><pre>{args}</pre>
@@ -299,18 +302,13 @@ def dialogs(lang):
   <div id="apOk" class="ap-s" hidden><p>{E(t['granted'])}</p><output id="apMail"></output>
     <div class="acts"><button class="ghost" id="apCopy" type="button">{E(t['copy'])}</button><a class="btn" id="apSend">{E(t['send'])}</a><button class="ghost" id="apClose" type="button">{E(t['close'])}</button></div></div>
 </div></dialog>
-<dialog id="legacy" aria-labelledby="lgT"><div class="w2k" lang="ru">
-  <div class="cp"><span id="lgT">Справочник: Эпохи — 2003–2012</span><button class="x" id="lgX" type="button" aria-label="Закрыть">×</button></div>
-  <div class="mn" aria-hidden="true"><span>Файл</span><span>Операции</span><span>Справочники</span><span>Отчеты</span><span>Помощь</span></div>
+<dialog id="legacy" aria-labelledby="lgT"><div class="w2k">
+  <div class="cp"><span id="lgT">{E(old['title'])}</span><button class="x" id="lgX" type="button" aria-label="{E(old['close'])}">×</button></div>
+  <div class="mn" aria-hidden="true">{menu}</div>
   <div class="fb">
-    <div class="r"><span>Код:</span><div class="i">000000001</div></div>
-    <div class="r"><span>Период:</span><div class="i">2003 – 2012</div></div>
-    <div class="r"><span>Должность:</span><div class="i">Аналитик, инженер ПО, фриланс</div></div>
-    <div class="r"><span>Стек:</span><div class="i">1С · C++ · SQL</div></div>
-    <div class="r"><span>Образование:</span><div class="i">BS in Computer Science, Serpukhov Technical College</div></div>
-    <div class="r"><span>Статус:</span><div class="i">Перемещено в архив</div></div>
+    {rows}
   </div>
-  <div class="ms">Документ проведен. Эпоха закрыта, субъект ушел в Android.</div>
+  <div class="ms">{E(old['msg'])}</div>
   <div class="bs"><button class="b" id="lgOk" type="button">OK</button></div>
 </div></dialog>'''
 
