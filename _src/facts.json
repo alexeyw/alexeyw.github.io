@@ -1,0 +1,19 @@
+{
+  "checked": "2026-11-08",
+  "facts": {
+    "stars": 49,
+    "forks": 6,
+    "release": "0.13.0",
+    "releases": 21,
+    "commits": 2073,
+    "agent": 19,
+    "window": 30,
+    "prs": 610,
+    "golden": 799,
+    "workflows": 4,
+    "seeds_downloads": "50K+",
+    "seeds_rating": "4.0",
+    "seeds_ratings": "551",
+    "seeds_updated": "Oct 31, 2026"
+  }
+}
