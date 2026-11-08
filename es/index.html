@@ -48,10 +48,12 @@
       </div>
     </section>
     <section class="right">
-      <div class="field" id="field">
-        <canvas id="terrain" aria-hidden="true"></canvas>
-        <svg id="map" role="group" aria-label="Mapa de memoria. Los registros con fecha siguen la escala de tiempo; los antiguos se apagan."></svg>
-        <p class="mapcap">Mapa de memoria. Los registros con fecha siguen la escala de tiempo; los antiguos se apagan.</p>
+      <div class="field-w">
+        <p class="mapcap">Mapa de memoria. Los registros con fecha siguen la escala de tiempo; los antiguos se apagan. <span class="swipe">Desliza hasta 2003.</span></p>
+        <div class="field" id="field">
+          <canvas id="terrain" aria-hidden="true"></canvas>
+          <svg id="map" role="group" aria-label="Mapa de memoria. Los registros con fecha siguen la escala de tiempo; los antiguos se apagan."></svg>
+        </div>
       </div>
       <div class="console">
         <form class="q" id="qf" role="search">

@@ -111,16 +111,20 @@ const nodeEls = RECORDS.map((r, i) => {
 
 let W = 0, H = 0, G = 7, cols = 0, rows = 0, F = new Float32Array(0), K = [];
 const LV = [.16, .26, .38, .52, .68, .86, 1.06, 1.3];
+const MAP_MIN = 760; /* below this the labels collide, so narrow screens pan the map instead of squeezing it */
+let panned = false;
 function layout() {
   const b = field.getBoundingClientRect();
-  W = b.width; H = b.height;
-  if (!W || !H) return;
-  const compact = W < 640 && innerWidth <= 880;
+  if (!b.width || !b.height) return;
+  const narrow = innerWidth <= 880;
+  const pan = narrow && b.width < 640;
+  W = pan ? MAP_MIN : b.width; H = b.height;
+  cv.style.width = svg.style.width = pan ? W + 'px' : '';
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
   cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
-  const padL = compact ? 8 : 24, padR = compact ? 8 : 22, padT = compact ? 6 : 46, padB = compact ? 6 : 34;
+  const padL = 24, padR = 22, padT = narrow ? 24 : 46, padB = 34;
   const px = n => padL + n * (W - padL - padR), py = n => padT + n * (H - padT - padB);
   RECORDS.forEach(r => { r.x_ = px(r.nx); r.y_ = py(r.py); });
   tickEls.forEach(k => {
@@ -135,10 +139,10 @@ function layout() {
   });
   RECORDS.forEach((r, i) => nodeEls[i].g.setAttribute('transform', `translate(${r.x_.toFixed(1)} ${r.y_.toFixed(1)})`));
   /* one kernel per record, precomputed; each frame is only a weighted sum */
-  G = compact ? 5 : 7;
+  G = 7;
   cols = Math.ceil(W / G) + 2; rows = Math.ceil(H / G) + 2;
   F = new Float32Array(cols * rows);
-  const sig = Math.max(compact ? 20 : 36, Math.min(W * .07, 76)), s2 = 2 * sig * sig;
+  const sig = Math.max(36, Math.min(W * .07, 76)), s2 = 2 * sig * sig;
   K = RECORDS.map(r => {
     const k = new Float32Array(cols * rows);
     for (let y = 0, p = 0; y < rows; y++) for (let x = 0; x < cols; x++, p++) {
@@ -147,6 +151,8 @@ function layout() {
     }
     return k;
   });
+  /* the map opens on the recent years; older ones are a swipe away */
+  if (!panned && field.scrollWidth > field.clientWidth) { field.scrollLeft = field.scrollWidth; panned = true; }
   if (reduce) draw();
 }
 function marks() {
