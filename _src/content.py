@@ -254,9 +254,10 @@ RECORDS = [
 LINKS = [
     ('era1c', 'freelance', 1), ('freelance', 'knotable', 1), ('knotable', 'swing', 1), ('swing', 'mobdev', 1), ('mobdev', 'muruna', 1),
     ('android', 'muruna'), ('android', 'mobdev'), ('android', 'swing'), ('android', 'knotable'), ('android', 'freelance'), ('android', 'knotwork'), ('android', 'seeds'),
-    ('compose', 'knotwork'), ('compose', 'seeds'), ('clean', 'muruna'), ('clean', 'mobdev'), ('clean', 'knotwork'), ('litert', 'knotwork'), ('mcp', 'knotwork'),
+    ('compose', 'android'), ('compose', 'knotwork'), ('compose', 'seeds'), ('clean', 'muruna'), ('clean', 'mobdev'), ('clean', 'knotwork'), ('litert', 'knotwork'), ('mcp', 'knotwork'),
     ('ainative', 'knotwork'), ('ainative', 'aidd'), ('ainative', 'sdd'), ('ainative', 'context'), ('ainative', 'guard'), ('ainative', 'gates'), ('aidd', 'knotwork'), ('gates', 'knotwork'), ('cert', 'aidd'),
-    ('fintech', 'muruna'), ('fintech', 'mobdev'), ('ble', 'android'), ('testing', 'muruna'), ('testing', 'swing'),
+    # the order of a pair sets which way its curve bends: android first keeps this one clear of the Muruna node
+    ('android', 'fintech'), ('fintech', 'compose'), ('fintech', 'muruna'), ('fintech', 'mobdev'), ('ble', 'android'), ('testing', 'muruna'), ('testing', 'swing'),
     ('remote', 'knotable'), ('remote', 'swing'), ('remote', 'mobdev'), ('remote', 'muruna'), ('remote', 'freelance'),
 ]
 
