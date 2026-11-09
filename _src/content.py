@@ -266,7 +266,7 @@ LBL = {
     'stars': {'en': 'Stars', 'es': 'Estrellas', 'ru': 'Звёзды'},
     'forks': {'en': 'Forks', 'es': 'Forks', 'ru': 'Форки'},
     'commits': {'en': 'Commits', 'es': 'Commits', 'ru': 'Коммиты'},
-    'releases': {'en': 'Tagged releases', 'es': 'Versiones', 'ru': 'Релизы'},
+    'releases': {'en': 'Tagged releases', 'es': 'Versiones etiquetadas', 'ru': 'Теги релизов'},
     'latest': {'en': 'Latest release', 'es': 'Última versión', 'ru': 'Последний релиз'},
     'license': {'en': 'License', 'es': 'Licencia', 'ru': 'Лицензия'},
     'prs': {'en': 'Merged pull requests', 'es': 'Pull requests fusionados', 'ru': 'Смерженные PR'},
