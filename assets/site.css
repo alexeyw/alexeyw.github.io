@@ -34,6 +34,9 @@
   --ash:#9ba1ab;
   --accent:#e1ac6e;      /* Knotwork accent 300 */
   --accent-hot:#f0c595;  /* Knotwork accent 200 */
+  --mark:#e1ac6e;        /* filled dots; on paper these stay brighter than the accent used for text */
+  --edge:#3b414d;
+  --spine:#5a616e;
   --mono:"Martian Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
   --sans:"Geologica","Segoe UI",system-ui,-apple-system,sans-serif;
   --gutter-l:max(24px,env(safe-area-inset-left,0px));
@@ -42,6 +45,11 @@
   /* the one 2003 window */
   --w-face:#d4d0c8;--w-hl:#fff;--w-sh:#808080;--w-dk:#404040;--w-cap1:#0a246a;--w-cap2:#a6caf0;
   --w-font:Tahoma,"MS Sans Serif","Segoe UI",Verdana,Arial,sans-serif;
+}
+/* Light theme: the same file on paper. Screen only, so the printed CV keeps its own colors below. */
+@media screen and (prefers-color-scheme:light){
+  :root{color-scheme:light;--ground:#fbfaf6;--raised:#fff;--line:#ddd8cc;--bone:#1b1e25;--ash:#5c626e;--accent:#96591a;--accent-hot:#7a4409;--mark:#c78432;--edge:#c8c2b4;--spine:#a8a295}
+  dialog::backdrop{background:rgba(58,50,38,.42)}
 }
 *{box-sizing:border-box}
 [hidden]{display:none!important}
@@ -90,8 +98,8 @@ button,input{font:inherit;color:inherit}
 .mapcap{position:absolute;left:24px;right:16px;top:14px;z-index:1;margin:0;font:400 10px/1.5 var(--mono);font-stretch:85%;color:var(--ash);pointer-events:none}
 .swipe{display:none}
 
-.edge{fill:none;stroke:#3b414d;stroke-width:1;transition:stroke .25s,opacity .25s}
-.edge.spine{stroke:#5a616e}
+.edge{fill:none;stroke:var(--edge);stroke-width:1;transition:stroke .25s,opacity .25s}
+.edge.spine{stroke:var(--spine)}
 .edge.hot{stroke:var(--accent)}
 .edge.dim{opacity:.32}
 .tick{stroke:var(--line);stroke-dasharray:1 4}
@@ -100,7 +108,7 @@ button,input{font:inherit;color:inherit}
 .n text{fill:var(--ash);font:400 10.5px var(--mono);font-stretch:75%;paint-order:stroke;stroke:var(--ground);stroke-width:4px;stroke-linejoin:round;transition:fill .2s,opacity .2s}
 .n .hit{fill:transparent}
 .n .d{transition:r .2s,opacity .2s}
-.n.v .d{fill:var(--accent)}
+.n.v .d{fill:var(--mark)}
 .n.s .d{fill:var(--ground);stroke:var(--bone);stroke-width:1.25}
 .n.hot text{fill:var(--bone)}
 .n.dim text,.n.dim .d{opacity:.66}
@@ -128,7 +136,7 @@ button,input{font:inherit;color:inherit}
 .rec-h:hover .rt{color:var(--accent-hot)}
 .ra{font:400 11px/1.3 var(--mono);font-variant-numeric:tabular-nums;color:var(--ash)}
 .g{display:inline-block;flex:none;width:8px;height:8px;border-radius:50%}
-.g.v{background:var(--accent)}
+.g.v{background:var(--mark)}
 .g.s{border:1.25px solid var(--bone)}
 .g.k{border:1.25px solid var(--accent)}
 .rt{font-size:14px;line-height:1.35;min-width:0}
@@ -161,7 +169,7 @@ button,input{font:inherit;color:inherit}
 .index a{display:flex;justify-content:space-between;gap:12px;padding:6px 0;font:400 12px/1.3 var(--mono);font-stretch:85%;color:var(--ash);text-decoration:none}
 .index a i{font-style:normal;font-variant-numeric:tabular-nums}
 .index a:hover,.index a.on{color:var(--bone)}
-.index a.on span::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent);margin-right:8px;vertical-align:1px}
+.index a.on span::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--mark);margin-right:8px;vertical-align:1px}
 .index .up{margin-top:14px}
 .body{border-left:1px solid var(--line);padding-left:24px;min-width:0;max-width:980px;box-sizing:content-box}
 .pr-head,.prn{display:none}
