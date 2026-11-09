@@ -347,9 +347,6 @@ def page(lang, facts, checked):
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#0a0c11">
 <link rel="icon" href="{base}assets/favicon.svg" type="image/svg+xml">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geologica:wght@300;400;500&family=Martian+Mono:wdth,wght@75..112.5,200..600&display=swap">
 <link rel="stylesheet" href="{base}assets/site.css">
 <script type="application/ld+json">{person}</script>
 </head>
