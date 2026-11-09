@@ -5,6 +5,7 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const D = JSON.parse($('#dossier-data').textContent);
 const T = D.t, RECORDS = D.records, N = RECORDS.length;
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const paper = matchMedia('(prefers-color-scheme: light)');
 
 /* ---------- derived model ---------- */
 const YEAR0 = 2002, YEAR1 = 2027.2, NOW_Y = 2026.9;
@@ -199,10 +200,12 @@ function draw() {
         case 10: ctx.moveTo(tx, y); ctx.lineTo(x2, ry); ctx.moveTo(x, ly); ctx.lineTo(bx, y2); break;
       }
     }
-    ctx.strokeStyle = `rgba(225,172,110,${(.13 + .1 * l).toFixed(2)})`;
+    /* thin amber lines fade on paper faster than on black, so the light theme holds them stronger */
+    ctx.strokeStyle = paper.matches ? `rgba(199,132,50,${(.26 + .085 * l).toFixed(2)})` : `rgba(225,172,110,${(.13 + .1 * l).toFixed(2)})`;
     ctx.stroke();
   }
 }
+paper.addEventListener('change', () => { if (reduce) draw(); });
 let lastF = 0, onScreen = true;
 function frame(t) {
   requestAnimationFrame(frame);

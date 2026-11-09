@@ -345,7 +345,9 @@ def page(lang, facts, checked):
 <meta property="og:url" content="{C.SITE}{path}">
 <meta property="og:image" content="{C.SITE}assets/og.png">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="theme-color" content="#0a0c11">
+<meta name="color-scheme" content="dark light">
+<meta name="theme-color" content="#0a0c11" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#fbfaf6" media="(prefers-color-scheme: light)">
 <link rel="icon" href="{base}assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="{base}assets/site.css">
 <script type="application/ld+json">{person}</script>
@@ -373,7 +375,8 @@ def browser(*args):
 def snapshot_preview(target):
     """Headless virtual time delivers only a few animation frames, too few for the terrain to rise,
     so the social preview comes from a temporary copy of the page whose frames are driven by hand.
-    ResizeObserver is off in that copy: a resize just before the capture would clear the canvas."""
+    ResizeObserver is off in that copy: a resize just before the capture would clear the canvas.
+    Headless Chrome reports a light system; the preview stays the dark one."""
     driver = (f'<base href="{ROOT.as_uri()}/"><script>window.ResizeObserver=class{{observe(){{}}unobserve(){{}}disconnect(){{}}}};'
               'window.__q=[];window.requestAnimationFrame=f=>{window.__q.push(f);return 1};'
               'setTimeout(()=>{let t=1000;for(let k=0;k<150;k++){t+=40;const q=window.__q;window.__q=[];q.forEach(f=>f(t))}},5000);</script>')
@@ -381,7 +384,7 @@ def snapshot_preview(target):
     with tempfile.TemporaryDirectory() as tmp:
         page = pathlib.Path(tmp) / 'preview.html'
         page.write_text(copy)
-        browser('--window-size=1200,630', f'--screenshot={target}', '--virtual-time-budget=9000', page.as_uri())
+        browser('--force-dark-mode', '--window-size=1200,630', f'--screenshot={target}', '--virtual-time-budget=9000', page.as_uri())
 
 
 def main():
