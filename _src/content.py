@@ -12,7 +12,7 @@ PLAY_KNOT = 'https://play.google.com/store/apps/details?id=app.knotwork.android'
 FDROID_KNOT = 'https://f-droid.org/packages/app.knotwork.android/'
 PLAY_SEEDS = 'https://play.google.com/store/apps/details?id=com.avolodin.colored.seeds'
 MURUNA = 'https://www.muruna.cl'
-WITHHELD = 3  # phone and two client names
+WITHHELD = 2  # two client names
 
 MON = {
     'en': ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
@@ -28,7 +28,10 @@ UI = {
         'role': 'Senior Android Engineer · AI Native Engineer', 'noteL': "Keeper's note",
         'note': "I'm Lot, his AI agent, and I keep this file. What I could check links to its source. The rest is marked as his word.",
         'fBased': 'Based', 'vBased': 'Santiago, Chile, remote', 'fNow': 'Now', 'fClients': 'Clients', 'fRecord': 'Record',
-        'vRecord': '20+ years in software, 12+ on Android, 20+ apps shipped', 'fLang': 'Languages', 'vLang': 'English, Spanish, Russian', 'fPhone': 'Phone',
+        'vRecord': '20+ years in software, 12+ on Android, 20+ apps shipped', 'fLang': 'Languages', 'vLang': 'English, Spanish, Russian',
+        'figsL': 'Checked figures', 'ago': '{n} days ago', 'flowCap': 'How a change travels. Select a stage to see its practices.', 'flowAgent': 'agents work', 'flowGate': 'a person decides', 'flowUnder': 'Under every stage',
+        'capsEv': '{v} of {n} can be read in public: the version catalog, workflows and commits of Knotwork. The rest is his word.', 'capsSrc': 'version catalog',
+        'yearAt': 'Active in {y}',
         'contact': 'Contact him', 'pdf': 'CV (PDF)', 'more': 'Read the full file',
         'mapcap': 'Memory map. Dated records sit on the time scale, older ones fade.', 'swipe': 'Swipe back to 2003.', 'ask': 'Ask the file',
         'ph': 'Try SDD, banking, or what he builds now', 'stV': 'Verified', 'stS': 'His word', 'stW': 'Withheld', 'stK': "Keeper's word",
@@ -57,7 +60,10 @@ UI = {
         'role': 'Ingeniero Android Senior · AI Native Engineer', 'noteL': 'Nota del archivero',
         'note': 'Soy Lot, su agente de IA, y llevo este expediente. Lo que pude comprobar enlaza a su fuente. Lo demás consta como palabra suya.',
         'fBased': 'Ubicación', 'vBased': 'Santiago, Chile, remoto', 'fNow': 'Actual', 'fClients': 'Clientes', 'fRecord': 'Trayectoria',
-        'vRecord': '20+ años en software, 12+ en Android, 20+ apps publicadas', 'fLang': 'Idiomas', 'vLang': 'inglés, español, ruso', 'fPhone': 'Teléfono',
+        'vRecord': '20+ años en software, 12+ en Android, 20+ apps publicadas', 'fLang': 'Idiomas', 'vLang': 'inglés, español, ruso',
+        'figsL': 'Cifras comprobadas', 'ago': 'hace {n} días', 'flowCap': 'Cómo viaja un cambio. Elige una etapa para ver sus prácticas.', 'flowAgent': 'trabajan los agentes', 'flowGate': 'decide una persona', 'flowUnder': 'En todas las etapas',
+        'capsEv': '{v} de {n} se pueden leer en público: el catálogo de versiones, los flujos y los commits de Knotwork. Lo demás, según él.', 'capsSrc': 'catálogo de versiones',
+        'yearAt': 'Activo en {y}',
         'contact': 'Contactar', 'pdf': 'CV (PDF, inglés)', 'more': 'Leer el expediente completo',
         'mapcap': 'Mapa de memoria. Los registros con fecha siguen la escala de tiempo; los antiguos se apagan.', 'swipe': 'Desliza hasta 2003.', 'ask': 'Consulta',
         'ph': 'Prueba con SDD, banca o qué construye ahora', 'stV': 'Verificado', 'stS': 'Según él', 'stW': 'Reservado', 'stK': 'Según el archivero',
@@ -86,7 +92,10 @@ UI = {
         'role': 'Старший Android-инженер · AI Native Engineer', 'noteL': 'Примечание составителя',
         'note': 'Я Лот, его ИИ-агент, и досье веду я. Что смог проверить, идёт со ссылкой на источник. Остальное помечено как его слова.',
         'fBased': 'Где', 'vBased': 'Сантьяго, Чили, удалённо', 'fNow': 'Сейчас', 'fClients': 'Клиенты', 'fRecord': 'Стаж',
-        'vRecord': '20+ лет в разработке, 12+ на Android, 20+ приложений', 'fLang': 'Языки', 'vLang': 'английский, испанский, русский', 'fPhone': 'Телефон',
+        'vRecord': '20+ лет в разработке, 12+ на Android, 20+ приложений', 'fLang': 'Языки', 'vLang': 'английский, испанский, русский',
+        'figsL': 'Проверенные цифры', 'ago': '{n} дн. назад', 'flowCap': 'Как идёт изменение. Выберите этап, чтобы увидеть его практики.', 'flowAgent': 'работают агенты', 'flowGate': 'решает человек', 'flowUnder': 'На каждом этапе',
+        'capsEv': '{v} из {n} видны публично: в каталоге версий, воркфлоу и коммитах Knotwork. Остальное с его слов.', 'capsSrc': 'каталог версий',
+        'yearAt': 'Активно в {y} году',
         'contact': 'Связаться', 'pdf': 'CV (PDF, англ.)', 'more': 'Читать досье целиком',
         'mapcap': 'Карта памяти. Записи с датой стоят на шкале времени, старые угасают.', 'swipe': 'Листайте назад до 2003.', 'ask': 'Спросить досье',
         'ph': 'Например: SDD, банки, что он делает сейчас', 'stV': 'Проверено', 'stS': 'Со слов субъекта', 'stW': 'Закрыто', 'stK': 'Со слов составителя',
@@ -129,33 +138,56 @@ T_GATES = {'en': 'Detekt, Ktlint, Android Lint, a 75% Kover coverage floor, Kons
            'ru': 'Detekt, Ktlint, Android Lint, порог покрытия 75% в Kover, архитектурные тесты на Konsist, скриншотная регрессия на Roborazzi и инструментальные тесты.'}
 E_REPO = {'en': 'Can be read in the Knotwork repository.', 'es': 'Se puede leer en el repositorio de Knotwork.', 'ru': 'Видно в репозитории Knotwork.'}
 AI_NATIVE = [
-    {'t': 'Spec-Driven Development (SDD)', 's': 'k', 'x': T_SDD},
-    {'t': 'AI-Driven Development (AIDD)', 's': 'v', 'x': T_AIDD,
+    {'id': 'sdd', 't': 'Spec-Driven Development (SDD)', 's': 'k', 'x': T_SDD},
+    {'id': 'aidd', 't': 'AI-Driven Development (AIDD)', 's': 'v', 'x': T_AIDD,
      'ev': {'en': '{{agent}} of the last {{window}} commits name an AI co-author. Merged pull requests: {{prs}}.', 'es': '{{agent}} de los últimos {{window}} commits nombran un coautor de IA. Pull requests fusionados: {{prs}}.', 'ru': '{{agent}} из последних {{window}} коммитов называют ИИ соавтором. Смерженных пул-реквестов: {{prs}}.'}},
-    {'t': 'Human-in-the-loop gates', 's': 'k',
+    {'id': 'hitl', 't': 'Human-in-the-loop gates', 's': 'k',
      'x': {'en': 'Stage gates at plan approval, design handoff, pull-request review and release. Irreversible actions require explicit human approval.',
            'es': 'Puntos de control en la aprobación del plan, la entrega de diseño, la revisión de pull requests y la publicación. Las acciones irreversibles requieren aprobación humana explícita.',
            'ru': 'Контрольные точки: утверждение плана, передача дизайна, ревью пул-реквеста и релиз. Необратимые действия требуют явного подтверждения человеком.'}},
-    {'t': 'Context engineering', 's': 'k', 'x': T_CONTEXT},
-    {'t': 'Multi-agent orchestration', 's': 'k',
+    {'id': 'context', 't': 'Context engineering', 's': 'k', 'x': T_CONTEXT},
+    {'id': 'multi', 't': 'Multi-agent orchestration', 's': 'k',
      'x': {'en': 'Subagents for parallel research and independent code review, reusable commands and skills, tools connected over MCP.',
            'es': 'Subagentes para investigación en paralelo y revisión de código independiente, comandos y skills reutilizables, herramientas conectadas por MCP.',
            'ru': 'Субагенты для параллельного исследования и независимого ревью кода, переиспользуемые команды и навыки, инструменты по MCP.'}},
-    {'t': 'Guardrails as code', 's': 'k', 'x': T_GUARD},
-    {'t': 'Agentic code review', 's': 'k',
+    {'id': 'guard', 't': 'Guardrails as code', 's': 'k', 'x': T_GUARD},
+    {'id': 'review', 't': 'Agentic code review', 's': 'k',
      'x': {'en': 'The agent re-reads the real diff as a reviewer against a checklist. Each defect gets a regression test, and the pass repeats until it finds nothing new. A human review follows.',
            'es': 'El agente relee el diff real como revisor con una lista de control. Cada defecto recibe una prueba de regresión y la pasada se repite hasta no encontrar nada nuevo. Después revisa una persona.',
            'ru': 'Агент перечитывает реальный дифф как ревьюер по чек-листу. Каждый дефект получает регрессионный тест, проход повторяется, пока не перестанут находиться новые замечания. Затем ревью проводит человек.'}},
-    {'t': 'CI quality gates', 's': 'v', 'x': T_GATES,
+    {'id': 'gates', 't': 'CI quality gates', 's': 'v', 'x': T_GATES,
      'ev': {'en': 'Golden screenshots: {{golden}}. CI workflows: {{workflows}}.', 'es': 'Capturas de referencia: {{golden}}. Flujos de CI: {{workflows}}.', 'ru': 'Эталонных скриншотов: {{golden}}. CI-воркфлоу: {{workflows}}.'}},
-    {'t': 'ADR and docs as code', 's': 'k',
+    {'id': 'adr', 't': 'ADR and docs as code', 's': 'k',
      'x': {'en': 'Architecture Decision Records for every significant decision. Documentation changes ship in the same pull request, with link checks in CI.',
            'es': 'Architecture Decision Records para cada decisión relevante. La documentación cambia en el mismo pull request, con comprobación de enlaces en CI.',
            'ru': 'Architecture Decision Records по каждому значимому решению. Документация меняется в том же пул-реквесте, ссылки проверяются в CI.'}},
-    {'t': 'Release engineering and supply chain', 's': 'v', 'ev': E_REPO,
+    {'id': 'release', 't': 'Release engineering and supply chain', 's': 'v', 'ev': E_REPO,
      'x': {'en': 'Phase integration branches keep main releasable. Dependency verification with PGP and SHA-256, CI actions pinned to commit SHAs, secret scanning.',
            'es': 'Las ramas de integración por fase mantienen main publicable. Verificación de dependencias con PGP y SHA-256, acciones de CI fijadas a commits y detección de secretos.',
            'ru': 'Интеграционные ветки по фазам держат main готовым к релизу. Проверка зависимостей по PGP и SHA-256, CI-экшены закреплены по SHA коммита, сканирование секретов.'}},
+]
+
+# The same ten practices as one line of work. A gate is a point where a person decides; it is the
+# "Human-in-the-loop gates" practice drawn where it happens. The order is the keeper's word, like that practice.
+FLOW = [
+    ('stage', {'en': 'Specification', 'es': 'Especificación', 'ru': 'Спецификация'}, ['sdd']),
+    ('gate', {'en': 'Plan approval', 'es': 'Aprobación del plan', 'ru': 'Утверждение плана'}, ['hitl']),
+    ('gate', {'en': 'Design handoff', 'es': 'Entrega de diseño', 'ru': 'Передача дизайна'}, ['hitl']),
+    ('stage', {'en': 'Implementation', 'es': 'Implementación', 'ru': 'Реализация'}, ['aidd', 'multi']),
+    ('stage', {'en': 'Agentic review', 'es': 'Revisión por agentes', 'ru': 'Ревью агентом'}, ['review', 'multi']),
+    ('stage', {'en': 'CI gates', 'es': 'Puertas de CI', 'ru': 'CI-гейты'}, ['gates']),
+    ('gate', {'en': 'Pull-request review', 'es': 'Revisión del pull request', 'ru': 'Ревью пул-реквеста'}, ['hitl']),
+    ('gate', {'en': 'Release decision', 'es': 'Decisión de publicar', 'ru': 'Решение о релизе'}, ['hitl']),
+    ('stage', {'en': 'Release', 'es': 'Publicación', 'ru': 'Релиз'}, ['release']),
+]
+FLOW_UNDER = ['context', 'guard', 'adr']
+
+# ---------- the first screen's proof: every figure verified, each links to where it can be read ----------
+FIGS = [
+    ('{{prs}}', {'en': 'pull requests merged', 'es': 'pull requests fusionados', 'ru': 'смерженных PR'}, 'Knotwork', KNOT + '/pulls?q=is%3Apr+is%3Amerged'),
+    ('{{commits}}', {'en': 'commits', 'es': 'commits', 'ru': 'коммитов'}, 'Knotwork', KNOT + '/commits'),
+    ('{{releases}}', {'en': 'tagged releases', 'es': 'versiones etiquetadas', 'ru': 'релизов с тегом'}, 'Knotwork', KNOT + '/tags'),
+    ('{{seeds_downloads}}', {'en': 'downloads', 'es': 'descargas', 'ru': 'загрузок'}, 'Colored Seeds', PLAY_SEEDS),
 ]
 
 # ---------- the map and the console ----------
@@ -357,6 +389,19 @@ CAPS = [
     {'l': {'en': 'Services and data', 'es': 'Servicios y datos', 'ru': 'Сервисы и данные'}, 's': 's', 'items': 'REST, JSON, XML, Firebase, AWS, SQL, SQLite, Realm, MongoDB'},
     {'l': {'en': 'CI/CD and tools', 'es': 'CI/CD y herramientas', 'ru': 'CI/CD и инструменты'}, 's': 's', 'items': 'Gradle, GitHub Actions, Bitrise, Jenkins, Android Studio, IntelliJ IDEA'},
 ]
+
+# Which single skills a stranger can read in public. A pattern is looked for in Knotwork's version catalog;
+# 'agent', 'workflows' and 'cert' are answered by the other checks in build.py. A skill with no entry is his word.
+CATALOG = KNOT + '/blob/main/gradle/libs.versions.toml'
+SKILL_PROOF = {
+    'Kotlin': r'(?m)^kotlin\s*=', 'Android SDK': r'(?m)^agp\s*=', 'Jetpack Compose': r'androidx\.compose', 'Architecture Components': r'androidx\.lifecycle',
+    'Coroutines': r'kotlinx-coroutines-core', 'OkHttp': r'com\.squareup\.okhttp3', 'WorkManager': r'androidx\.work', 'Room': r'androidx\.room',
+    'Navigation': r'androidx\.navigation', 'Hilt': r'hilt-android', 'Dagger': r'com\.google\.dagger',
+    'LiteRT-LM': r'com\.google\.ai\.edge\.litertlm', 'Koog': r'ai\.koog', 'AppFunctions Jetpack': r'androidx\.appfunctions',
+    'MCP': r'agents-mcp', 'Claude Code': 'agent', 'GitHub Copilot': 'cert',
+    'JUnit': r'group = "junit"', 'Espresso': r'androidx\.test\.espresso', 'MockK': r'io\.mockk', 'Detekt': r'(?m)^detekt\s*=', 'Ktlint': r'(?m)^ktlint\s*=', 'CI test pipelines': 'workflows',
+    'Firebase': r'com\.google\.firebase', 'Gradle': r'\[versions\]', 'GitHub Actions': 'workflows',
+}
 
 CERT = 'Security Skilled, 2025'
 

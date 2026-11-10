@@ -52,6 +52,10 @@ def gather():
     if tree['truncated']:
         sys.exit('GitHub truncated the tree listing, so the screenshot count would be wrong.')
     paths = [n['path'] for n in tree['tree']]
+    _, catalog = fetch('https://raw.githubusercontent.com/alexeyw/knotwork/main/gradle/libs.versions.toml')
+    workflows = sum(1 for x in paths if x.startswith('.github/workflows/') and x.endswith('.yml'))
+    # 'cert' is true here because check_links has already stopped the build if the credential page is gone.
+    answers = {'agent': agent > 0, 'workflows': workflows > 0, 'cert': True}
     # Google Play puts the rating markup only in the page it serves to plain HTTP clients.
     _, page = fetch(C.PLAY_SEEDS + '&hl=en', {'User-Agent': 'curl/8.7.1', 'Accept-Language': 'en'})
 
@@ -71,7 +75,8 @@ def gather():
         'window': len(window),
         'prs': prs,
         'golden': sum(1 for x in paths if re.search(r'src/test/snapshots/.*\.png$', x)),
-        'workflows': sum(1 for x in paths if x.startswith('.github/workflows/') and x.endswith('.yml')),
+        'workflows': workflows,
+        'skills': sorted(k for k, how in C.SKILL_PROOF.items() if (answers[how] if how in answers else re.search(how, catalog))),
         'seeds_downloads': pick(r'>([0-9.,]+[KMB]?\+)</div><div[^>]*>Downloads'),
         'seeds_rating': '%.1f' % float(pick(r'"ratingValue":"([^"]+)"')),
         'seeds_ratings': pick(r'"ratingCount":"([^"]+)"'),
@@ -82,7 +87,8 @@ def gather():
 def check_links():
     urls = {r['src'] for r in C.RECORDS if r.get('src')}
     urls |= {u for case in C.CASES for _, u in case['links']}
-    urls |= {C.MURUNA, 'https://github.com/alexeyw', C.CERT_URL}
+    urls |= {C.MURUNA, 'https://github.com/alexeyw', C.CERT_URL, C.CATALOG}
+    urls |= {u for *_, u in C.FIGS}
     bad = []
     for u in sorted(urls):
         try:
@@ -129,6 +135,23 @@ def when(r, lang):
     return f"{a} – {fmt_date(r['to'], lang)}" if r.get('to') else a
 
 
+AXIS = (2003, 2027)  # the chronicle's shared time scale
+NOW_Y = 2026.9
+
+
+def year_of(s):
+    if s == 'now':
+        return NOW_Y
+    y, _, m = s.partition('-')
+    return int(y) + ((int(m) - 1) / 12 if m else 0)
+
+
+def countable(v):
+    """A figure that can count up on screen: a whole number, with at most a K+ or + after it.
+    Only the first screen uses it: a figure caught half-way would be printed into the CV."""
+    return ' data-count' if re.fullmatch(r'\d+(K\+|\+)?', v) else ''
+
+
 def rd(n):
     return f'<span class="rd wh" style="--n:{n}"></span>'
 
@@ -151,23 +174,25 @@ def data_blob(lang, fill, checked):
         titles = [r['t']] if isinstance(r['t'], str) else list(r['t'].values())
         labels = [r['l']] if isinstance(r['l'], str) else list(r['l'].values())
         rec = {k: r[k] for k in ('id', 'k', 's', 'py', 'a') if k in r}
-        rec.update({'from': r.get('from'), 'px': r.get('px'), 't': L(r['t'], lang), 'l': L(r['l'], lang), 'x': fill(r['x'][lang]), 'w': when(r, lang),
+        rec.update({'from': r.get('from'), 'to': r.get('to'), 'px': r.get('px'), 't': L(r['t'], lang), 'l': L(r['l'], lang), 'x': fill(r['x'][lang]), 'w': when(r, lang),
                     'src': r.get('src'), 'sl': r.get('sl'), 'legacy': bool(r.get('legacy')),
                     'ia': ' '.join(titles + labels), 'ib': r['kw'], 'ic': ' '.join(strip(s) for s in r['x'].values())})
         records.append(rec)
     nv, ns, nk = counts()
     boot = [s.format(n=len(records), e=len(C.LINKS), v=nv, s=ns, k=nk, w=C.WITHHELD) for s in t['boot']]
-    js = {k: t[k] for k in ('stV', 'stS', 'stK', 'srcK', 'withheld', 'checked', 'srcCv', 'cvDate', 'empty', 'rest', 'legacy', 'all', 'chips', 'copy', 'copied', 'denied')}
+    js = {k: t[k] for k in ('stV', 'stS', 'stK', 'srcK', 'withheld', 'checked', 'srcCv', 'cvDate', 'empty', 'rest', 'legacy', 'all', 'chips', 'copy', 'copied', 'denied', 'ago', 'yearAt')}
     js['boot'] = boot
     blob = {'lang': lang, 'checked': checked, 't': js, 'records': records, 'links': C.LINKS}
     return json.dumps(blob, ensure_ascii=False, separators=(',', ':')).replace('</', '<\\/')
 
 
-def first_screen(lang, base, langs_nav, checked, nv, ns, nk):
+def first_screen(lang, base, langs_nav, checked, nv, ns, nk, fill):
     t = C.UI[lang]
+    figs = ''.join(f'<a class="fig" href="{E(u)}" target="_blank" rel="noopener"><b{countable(fill(v))}>{E(fill(v))}</b><span>{E(lab[lang])}</span><i>{E(proj)}</i></a>'
+                   for v, lab, proj, u in C.FIGS)
     return f'''<div class="sheet" id="top">
   <header class="bar">
-    <div class="bar-l"><span>{E(t['file'])}</span><span>{E(t['clr'])}</span><span>{E(t['sync'])} {checked}</span></div>
+    <div class="bar-l"><span>{E(t['file'])}</span><span>{E(t['clr'])}</span><span data-chk>{E(t['sync'])} {checked}</span></div>
     <nav class="langs" aria-label="Language">{langs_nav}</nav>
   </header>
   <main class="main">
@@ -175,13 +200,16 @@ def first_screen(lang, base, langs_nav, checked, nv, ns, nk):
       <h1 class="name" id="nm"><span>{E(t['first'])}</span> <span>{E(t['last'])}</span></h1>
       <p class="role">{E(t['role'])}</p>
       <p class="note"><b>{E(t['noteL'])}</b><span>{E(t['note'])}</span></p>
+      <div class="figs-w">
+        <p class="figs-l"><i class="g v"></i>{E(t['figsL'])}<span data-chk>{E(t['checked'])} {checked}</span></p>
+        <div class="figs">{figs}</div>
+      </div>
       <dl class="fields">
         <div><dt>{E(t['fBased'])}</dt><dd>{E(t['vBased'])}</dd></div>
         <div><dt>{E(t['fNow'])}</dt><dd>Senior Android Developer, Muruna</dd></div>
         <div><dt>{E(t['fClients'])}</dt><dd>{rd(6)}&ensp;{rd(10)}</dd></div>
         <div><dt>{E(t['fRecord'])}</dt><dd>{E(t['vRecord'])}</dd></div>
         <div><dt>{E(t['fLang'])}</dt><dd>{E(t['vLang'])}</dd></div>
-        <div><dt>{E(t['fPhone'])}</dt><dd>{rd(13)}</dd></div>
       </dl>
       <div class="cta">
         <button class="btn js-contact" type="button">{E(t['contact'])}</button>
@@ -227,7 +255,7 @@ def case_html(c, lang, base, fill, checked):
     links = ' '.join(f'<a href="{E(u)}" target="_blank" rel="noopener">{E(n)}<span class="ar"> ↗</span></a>' for n, u in c['links'])
     shots = ''.join(f'<figure style="--w:{min(w, 256) if w == h else 200}px"><img src="{base}assets/{f}" width="{w}" height="{h}" loading="lazy" alt="{E(cap[lang])}"><figcaption>{E(cap[lang])}</figcaption></figure>' for f, w, h, cap in c['shots'])
     return f'''<article class="case" id="case-{c['id']}">
-  <header class="case-h"><h3>{E(c['name'])}</h3><span class="stamp v">{E(t['stV'])}</span><span class="chk">{E(t['checked'])} {checked}</span></header>
+  <header class="case-h"><h3>{E(c['name'])}</h3><span class="stamp v">{E(t['stV'])}</span><span class="chk" data-chk>{E(t['checked'])} {checked}</span></header>
   <p class="kicker">{E(c['kicker'][lang])}</p>
   <div class="case-g">
     <div class="case-t"><p>{E(c['lede'][lang])}</p>{ul(c['points'][lang], fill)}</div>
@@ -243,14 +271,51 @@ def job_html(j, lang):
     org_html = f'<a href="{E(j["href"])}" target="_blank" rel="noopener">{E(org)}</a>' if j.get('href') else E(org)
     note = f'<p class="cl-note">{E(t["clientsNote"])} <a href="{E(j["href"])}" target="_blank" rel="noopener">{E(t["clientsSite"])} ↗</a>.</p>' if j.get('clients') else ''
     old = f'<button class="oldbtn" type="button" data-legacy="1">{E(t["legacy"])}</button>' if j.get('legacy') else ''
+    a, b = ((year_of(j[k]) - AXIS[0]) / (AXIS[1] - AXIS[0]) for k in ('from', 'to'))
     return f'''<article class="job">
-  <time>{E(when(j, lang))}</time>
+  <div class="when"><time>{E(when(j, lang))}</time><i class="span{' now' if j['to'] == 'now' else ''}" style="--a:{a:.3f};--b:{b:.3f}" aria-hidden="true"></i></div>
   <div><h3>{E(L(j['title'], lang))}<span class="org">, {org_html}</span></h3>
   <p class="where">{E(j['where'][lang])}</p>{ul(j['points'][lang], str)}{note}{old}</div>
 </article>'''
 
 
-def doc_html(lang, base, fill, checked):
+def flow_html(lang):
+    """The ten practices as one line of work: stages where agents work, diamonds where a person decides."""
+    t = C.UI[lang]
+    st = {a['id']: a['s'] for a in C.AI_NATIVE}
+    name = {a['id']: a['t'] for a in C.AI_NATIVE}
+    items = ''
+    for kind, label, ps in C.FLOW:
+        mark = '<i class="dm"></i>' if kind == 'gate' else f'<i class="g {st[ps[0]]}"></i>'
+        items += f'<li class="{"gt" if kind == "gate" else "st"}"><button type="button" data-ps="{" ".join(ps)}">{mark}<b>{E(label[lang])}</b></button></li>'
+    under = ''.join(f'<button type="button" data-ps="{p}"><i class="g {st[p]}"></i>{E(name[p])}</button>' for p in C.FLOW_UNDER)
+    return f'''<div class="flow-w scr" id="flow">
+  <p class="flow-c">{E(t['flowCap'])}</p>
+  <ol class="flow">{items}</ol>
+  <p class="flow-u"><span>{E(t['flowUnder'])}</span>{under}</p>
+  <p class="flow-k"><span><i class="g v"></i><i class="g k"></i>{E(t['flowAgent'])}</span><span><i class="dm"></i>{E(t['flowGate'])}</span><span class="stamp k">{E(t['stK'])}</span><span class="chk">{E(t['srcK'])}</span></p>
+</div>'''
+
+
+def caps_html(lang, facts):
+    """Each skill is marked by itself: a filled dot where a stranger can read it in public, none where it is his word."""
+    t = C.UI[lang]
+    proven = set(facts.get('skills', []))
+    out = ''
+    for c in C.CAPS:
+        parts = [(n.strip(), sep) for n, sep in re.findall(r'([^,;]+)([,;]?)', c['items'])]
+        hits = sum(1 for n, _ in parts if n in proven)
+        chips = ' '.join(f'<span class="sk{" v" if n in proven else ""}">{E(n)}</span>{sep}' for n, sep in parts)
+        if hits:
+            ev = f'{E(t["capsEv"].format(v=hits, n=len(parts)))} <a href="{C.CATALOG}" target="_blank" rel="noopener">{E(t["capsSrc"])} ↗</a>'
+        else:
+            ev = E(t['stS'])
+        out += (f'<div class="cap"><h3>{E(L(c["l"], lang))}</h3><div><p><span class="scr">{chips}</span><span class="prn">{E(c["items"])}</span></p>'
+                f'<p class="cap-e"><i class="g {"v" if hits else "s"}"></i><span>{ev}</span></p></div></div>')
+    return out
+
+
+def doc_html(lang, base, fill, checked, facts):
     t = C.UI[lang]
     sections = [('summary', t['sSummary'], None), ('cases', t['sCases'], len(C.CASES)), ('ai', t['sAI'], len(C.AI_NATIVE)), ('chronicle', t['sChron'], len(C.CHRONICLE)),
                 ('caps', t['sCaps'], len(C.CAPS)), ('ref', t['sRef'], None), ('papers', t['sPapers'], None)]
@@ -261,11 +326,9 @@ def doc_html(lang, base, fill, checked):
     ai = ''
     for a in C.AI_NATIVE:
         ev = E(fill(a['ev'][lang])) if a.get('ev') else E(t['srcK'])
-        ai += f'<div class="cap"><h3>{E(a["t"])}</h3><div><p>{E(a["x"][lang])}</p><p class="cap-e"><i class="g {a["s"]}"></i>{ev}</p></div></div>'
-    caps = ''
-    for c in C.CAPS:
-        ev = E(fill(c['ev'][lang])) if c.get('ev') else E(t['stS'])
-        caps += f'<div class="cap"><h3>{E(L(c["l"], lang))}</h3><div><p>{E(c["items"])}</p><p class="cap-e"><i class="g {c["s"]}"></i>{ev}</p></div></div>'
+        ai += f'<div class="cap" data-p="{a["id"]}"><h3>{E(a["t"])}</h3><div><p>{E(a["x"][lang])}</p><p class="cap-e"><i class="g {a["s"]}"></i>{ev}</p></div></div>'
+    caps = caps_html(lang, facts)
+    axis = f'<div class="job-ax scr" aria-hidden="true"><span>{AXIS[0]}</span><span>{int(NOW_Y)}</span></div>'
     ref = ''.join(f'<li>{E(x)}</li>' for x in t['ref'])
     return f'''<div class="doc" id="file">
   <nav class="index" aria-label="{E(t['index'])}"><b>{E(t['index'])}</b>{index}<a class="up" href="#top"><span>↑ AV-0001</span></a></nav>
@@ -277,8 +340,8 @@ def doc_html(lang, base, fill, checked):
     </header>
     <section class="sec" id="sec-summary"><h2>{title['summary']}</h2><p class="sum">{E(t['summary'])}</p><p class="sum-s"><span class="stamp s">{E(t['stS'])}</span><span class="chk">{E(t['srcCv'])}, {E(t['cvDate'])}</span></p></section>
     <section class="sec" id="sec-cases"><h2>{title['cases']}</h2>{cases}</section>
-    <section class="sec" id="sec-ai"><h2>{title['ai']}</h2><p class="ref-i">{E(t['aiIntro'])}</p>{ai}</section>
-    <section class="sec" id="sec-chronicle"><h2>{title['chronicle']}</h2><p class="sec-s"><span class="stamp s">{E(t['stS'])}</span><span class="chk">{E(t['srcCv'])}, {E(t['cvDate'])}</span></p>{jobs}</section>
+    <section class="sec" id="sec-ai"><h2>{title['ai']}</h2><p class="ref-i">{E(t['aiIntro'])}</p>{flow_html(lang)}{ai}</section>
+    <section class="sec" id="sec-chronicle"><h2>{title['chronicle']}</h2><p class="sec-s"><span class="stamp s">{E(t['stS'])}</span><span class="chk">{E(t['srcCv'])}, {E(t['cvDate'])}</span></p>{axis}{jobs}</section>
     <section class="sec" id="sec-caps"><h2>{title['caps']}</h2>{caps}</section>
     <section class="sec" id="sec-ref"><h2>{title['ref']}</h2><p class="ref-i">{E(t['refIntro'])}</p><ul class="ref">{ref}</ul><p class="sum-s"><span class="stamp k">{E(t['stK'])}</span><span class="chk">{E(t['refFoot'])}</span></p></section>
     <section class="sec" id="sec-papers"><h2>{title['papers']}</h2>
@@ -353,8 +416,8 @@ def page(lang, facts, checked):
 <script type="application/ld+json">{person}</script>
 </head>
 <body>
-{first_screen(lang, base, nav, checked, nv, ns, nk)}
-{doc_html(lang, base, fill, checked)}
+{first_screen(lang, base, nav, checked, nv, ns, nk, fill)}
+{doc_html(lang, base, fill, checked, facts)}
 {dialogs(lang)}
 <script type="application/json" id="dossier-data">{data_blob(lang, fill, checked)}</script>
 <script src="{base}assets/site.js"></script>
