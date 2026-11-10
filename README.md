@@ -7,6 +7,14 @@ The pages are generated. Edit `_src/content.py`, `_src/site.css` or `_src/site.j
 `python3 _src/build.py`. The build checks every cited source and refreshes the figures the page calls
 verified (GitHub API through `gh`, the Google Play listing). It stops if a source no longer answers.
 
+Single skills are marked the same way: `SKILL_PROOF` in `_src/content.py` names a pattern for each one, and the
+build looks for it in Knotwork's public version catalog. A skill whose pattern is no longer found goes back to
+"his word" by itself.
+
+`python3 _src/recheck.py` runs the build, compares the fresh figures with the ones this repository was built
+from, and opens a pull request when a figure moved or the published check is three weeks old. Nothing is
+merged without a person; `--dry-run` stops before the push.
+
 Colored Seeds has its own repository, `alexeyw/colored-seeds`, and is served at
 https://alexeyw.github.io/colored-seeds/.
 

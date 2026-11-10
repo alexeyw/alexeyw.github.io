@@ -24,6 +24,10 @@ RECORDS.forEach((r, i) => { if (!r.from && !adj[i].some(j => RECORDS[j].from)) r
 
 const esc = s => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const rich = s => esc(s).replace(/\[#(\d+)\]/g, (_, n) => `<span class="rd" style="--n:${n}" role="img" aria-label="${esc(T.withheld)}" title="${esc(T.withheld)}"></span>`);
+/* a check older than a month says so itself */
+const days = Math.floor((Date.now() - Date.parse(D.checked)) / 864e5);
+const AGE = days > 30 ? ' · ' + T.ago.replace('{n}', days) : '';
+if (AGE) { $$('[data-chk]').forEach(e => { e.textContent += AGE; }); $$('.stamp.v').forEach(e => e.classList.add('old')); }
 $$('.rd.wh').forEach(e => { e.title = T.withheld; e.setAttribute('role', 'img'); e.setAttribute('aria-label', T.withheld); });
 
 /* ---------- retrieval: words in any of the three languages, no model ---------- */
@@ -74,8 +78,9 @@ function spread(i) {
   t[i] = 1.15;
   return t;
 }
+let scrub = null;
 function push() {
-  tgt.set(hover >= 0 ? spread(hover) : base);
+  tgt.set(hover >= 0 ? spread(hover) : scrub || base);
   if (reduce) { cur.set(tgt); draw(); }
   marks();
 }
@@ -85,7 +90,7 @@ function setBase(t) { base.set(t); push(); }
 const field = $('#field'), cv = $('#terrain'), ctx = cv.getContext('2d'), svg = $('#map');
 const NS = 'http://www.w3.org/2000/svg';
 const el = (n, a, p) => { const e = document.createElementNS(NS, n); for (const k in a) e.setAttribute(k, a[k]); if (p) p.appendChild(e); return e; };
-const gTicks = el('g', {}, svg), gEdges = el('g', {}, svg), gNodes = el('g', {}, svg);
+const gTicks = el('g', {}, svg), gEdges = el('g', {}, svg), gPulse = el('g', {}, svg), gNodes = el('g', {}, svg);
 const TICKS = [2003, 2011, 2014, 2017, 2021, 2026];
 const tickEls = TICKS.map(y => ({ y, l: el('line', { class: 'tick' }, gTicks), t: el('text', { class: 'tk', 'text-anchor': 'middle' }, gTicks) }));
 tickEls.forEach(k => { k.t.textContent = k.y; });
@@ -110,6 +115,59 @@ const nodeEls = RECORDS.map((r, i) => {
   return { g, d };
 });
 
+/* the time scale can be read with the pointer: whatever was going on in that year lights up */
+const axis = el('rect', { class: 'axis' }, svg);
+const yLine = el('line', { class: 'yc', visibility: 'hidden' }, svg), yText = el('text', { class: 'yt', 'text-anchor': 'middle', visibility: 'hidden' }, svg);
+let geo = null;
+function activeIn(y) {
+  const t = new Float32Array(N);
+  for (let k = 0; k < N; k++) t[k] = rest[k] * .18;
+  RECORDS.forEach((r, i) => {
+    if (!r.from) return;
+    const a = yearOf(r.from), b = r.to === 'now' ? NOW_Y : r.to ? yearOf(r.to) : a + .5;
+    if (y < a - .05 || y > b + .05) return;
+    t[i] = 1;
+    adj[i].forEach(j => { if (!RECORDS[j].from) t[j] = Math.max(t[j], .5); });
+  });
+  return t;
+}
+function scrubTo(e) {
+  if (!geo) return;
+  const b = svg.getBoundingClientRect(), x = (e.clientX - b.left) * (W / b.width);
+  const y = Math.max(2003, Math.min(NOW_Y, YEAR0 + (x - geo.padL) / geo.span * (YEAR1 - YEAR0)));
+  const X = (geo.padL + (y - YEAR0) / (YEAR1 - YEAR0) * geo.span).toFixed(1);
+  scrub = activeIn(y);
+  yLine.setAttribute('x1', X); yLine.setAttribute('x2', X); yLine.setAttribute('y1', geo.top); yLine.setAttribute('y2', H - 24);
+  yText.setAttribute('x', X); yText.setAttribute('y', H - 27); yText.textContent = Math.floor(y);
+  yLine.setAttribute('visibility', 'visible'); yText.setAttribute('visibility', 'visible');
+  push();
+}
+axis.addEventListener('pointermove', scrubTo);
+axis.addEventListener('pointerdown', scrubTo);
+axis.addEventListener('pointerleave', () => { scrub = null; yLine.setAttribute('visibility', 'hidden'); yText.setAttribute('visibility', 'hidden'); push(); });
+
+/* a pulse runs from the record that was asked for to each record it woke */
+let pulses = [];
+function burst(src, vals) {
+  pulses.forEach(p => p.c.remove()); pulses = [];
+  if (reduce) return;
+  EDGES.forEach((e, n) => {
+    if (e.i !== src && e.j !== src) return;
+    if (vals[e.i === src ? e.j : e.i] < .3) return;
+    pulses.push({ c: el('circle', { class: 'pulse', r: 2.6, opacity: 0 }, gPulse), p: edgeEls[n], rev: e.j === src, t: 0 });
+  });
+}
+function movePulses(t) {
+  pulses = pulses.filter(p => {
+    if (!p.t) p.t = t;
+    const u = (t - p.t) / 640;
+    if (u >= 1) { p.c.remove(); return false; }
+    const at = p.p.getPointAtLength(p.p.getTotalLength() * (p.rev ? 1 - u : u));
+    p.c.setAttribute('cx', at.x.toFixed(1)); p.c.setAttribute('cy', at.y.toFixed(1)); p.c.setAttribute('opacity', (1 - u * u).toFixed(2));
+    return true;
+  });
+}
+
 let W = 0, H = 0, G = 7, cols = 0, rows = 0, F = new Float32Array(0), K = [];
 const LV = [.16, .26, .38, .52, .68, .86, 1.06, 1.3];
 const MAP_MIN = 760; /* below this the labels collide, so narrow screens pan the map instead of squeezing it */
@@ -128,6 +186,8 @@ function layout() {
   const padL = 24, padR = 22, padT = narrow ? 24 : 46, padB = 34;
   const px = n => padL + n * (W - padL - padR), py = n => padT + n * (H - padT - padB);
   RECORDS.forEach(r => { r.x_ = px(r.nx); r.y_ = py(r.py); });
+  geo = { padL, span: W - padL - padR, top: padT - 6 };
+  axis.setAttribute('x', 0); axis.setAttribute('y', H - 32); axis.setAttribute('width', W); axis.setAttribute('height', 32);
   tickEls.forEach(k => {
     const x = px((k.y - YEAR0) / (YEAR1 - YEAR0));
     k.l.setAttribute('x1', x); k.l.setAttribute('x2', x); k.l.setAttribute('y1', padT - 6); k.l.setAttribute('y2', H - 24);
@@ -157,8 +217,8 @@ function layout() {
   if (reduce) draw();
 }
 function marks() {
-  const vals = hover >= 0 ? spread(hover) : base;
-  const focus = hover >= 0 || selected >= 0 || view.type === 'query';
+  const vals = hover >= 0 ? spread(hover) : scrub || base;
+  const focus = hover >= 0 || !!scrub || selected >= 0 || view.type === 'query';
   nodeEls.forEach((n, i) => {
     n.g.classList.toggle('hot', focus && vals[i] >= .5);
     n.g.classList.toggle('dim', focus && vals[i] < .22);
@@ -209,7 +269,9 @@ paper.addEventListener('change', () => { if (reduce) draw(); });
 let lastF = 0, onScreen = true;
 function frame(t) {
   requestAnimationFrame(frame);
-  if (!onScreen || t - lastF < 33) return;
+  if (!onScreen) return;
+  if (pulses.length) movePulses(t);
+  if (t - lastF < 33) return;
   lastF = t;
   if (!t0) t0 = t;
   gain = Math.min(1, (t - t0) / 1400); gain = 1 - (1 - gain) * (1 - gain);
@@ -224,10 +286,10 @@ function frame(t) {
 const out = $('#out'), input = $('#q'), chipsEl = $('#chips');
 function rowHtml(row, open) {
   const r = RECORDS[row.i];
-  const head = `<button class="rec-h" type="button" data-id="${row.i}"><span class="ra">${row.act.toFixed(2)}</span><i class="g ${r.s}"></i><span class="rt">${esc(r.t)}</span><span class="rw">${esc(r.w)}</span></button>`;
+  const head = `<button class="rec-h" type="button" data-id="${row.i}"><span class="ra" aria-hidden="true"><i style="--a:${Math.min(1, row.act).toFixed(2)}"></i></span><i class="g ${r.s}"></i><span class="rt">${esc(r.t)}</span><span class="rw">${esc(r.w)}</span></button>`;
   if (!open) return `<article class="rec">${head}</article>`;
   const src = r.s === 'v'
-    ? `<span class="stamp v">${esc(T.stV)}</span><a href="${esc(r.src)}" target="_blank" rel="noopener">${esc(r.sl || r.src.replace('https://', ''))} ↗</a><span>${esc(T.checked)} ${D.checked}</span>`
+    ? `<span class="stamp v${AGE ? ' old' : ''}">${esc(T.stV)}</span><a href="${esc(r.src)}" target="_blank" rel="noopener">${esc(r.sl || r.src.replace('https://', ''))} ↗</a><span>${esc(T.checked)} ${D.checked}${esc(AGE)}</span>`
     : r.s === 'k'
       ? `<span class="stamp k">${esc(T.stK)}</span><span>${esc(T.srcK)}</span>`
       : `<span class="stamp s">${esc(T.stS)}</span><span>${esc(T.srcCv)}, ${esc(T.cvDate)}</span>`;
@@ -251,6 +313,7 @@ function run(q, chip) {
     .map(x => ({ i: x.i, act: .42 + .55 * x.r }));
   list.forEach(r => { t[r.i] = Math.max(t[r.i], r.act * 1.1); adj[r.i].forEach(j => { t[j] = Math.max(t[j], r.act * .42); }); });
   setBase(t);
+  burst(list[0].i, t);
   renderRows(list, list[0].i);
 }
 function showAll(chip) {
@@ -263,6 +326,7 @@ function select(i) {
   finishBoot();
   hover = -1; selected = i; view = { type: 'select', i }; input.value = ''; pressChip(-1);
   setBase(spread(i));
+  burst(i, tgt);
   const near = adj[i].map(j => ({ i: j, act: .45 + .35 * rest[j] })).sort((a, b) => b.act - a.act);
   renderRows([{ i, act: 1 }, ...near], i);
 }
@@ -339,6 +403,60 @@ if ('IntersectionObserver' in window && links.length) {
   }), { rootMargin: '-20% 0px -70% 0px' });
   $$('.sec').forEach(s => io.observe(s));
   new IntersectionObserver(es => { onScreen = es[0].isIntersecting; }).observe(field);
+}
+
+/* the first screen's figures count up once; the stamps further down are pressed as the reader reaches them */
+if (!reduce && 'IntersectionObserver' in window) {
+  const count = e => {
+    const m = /^(\d+)(.*)$/.exec(e.textContent);
+    if (!m) return;
+    const end = +m[1], tail = m[2];
+    let t1 = 0;
+    const step = t => {
+      if (!t1) t1 = t;
+      const u = Math.min(1, (t - t1) / 900);
+      e.textContent = Math.round(end * (1 - Math.pow(1 - u, 3))) + tail;
+      if (u < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+    /* frames can stall (a background tab, a throttled pane); a checked figure must not be left half-counted */
+    setTimeout(() => { t1 = -1e9; e.textContent = end + tail; }, 1300);
+  };
+  const seen = new IntersectionObserver(es => es.forEach(x => {
+    if (!x.isIntersecting) return;
+    seen.unobserve(x.target);
+    if (x.target.hasAttribute('data-count')) count(x.target); else x.target.classList.add('in');
+  }), { threshold: .6 });
+  $$('[data-count], .doc .stamp').forEach(e => seen.observe(e));
+}
+
+/* the line of work: a stage shows its practices, and a light walks the line, waiting at each point where a person decides */
+const flow = $('#flow');
+if (flow) {
+  const sec = $('#sec-ai'), btns = $$('button[data-ps]', flow), caps = $$('.cap[data-p]', sec), steps = $$('.flow li', flow);
+  let sticky = null, k = -1, inView = false;
+  const show = b => {
+    const ps = b ? b.dataset.ps.split(' ') : null;
+    sec.classList.toggle('picking', !!ps);
+    caps.forEach(c => c.classList.toggle('pick', !!ps && ps.includes(c.dataset.p)));
+    btns.forEach(x => x.setAttribute('aria-pressed', x === sticky ? 'true' : 'false'));
+  };
+  btns.forEach(b => {
+    b.setAttribute('aria-pressed', 'false');
+    b.addEventListener('pointerenter', () => show(b));
+    b.addEventListener('focus', () => show(b));
+    b.addEventListener('pointerleave', () => show(sticky));
+    b.addEventListener('blur', () => show(sticky));
+    b.addEventListener('click', () => { sticky = sticky === b ? null : b; show(sticky); });
+  });
+  if (!reduce && 'IntersectionObserver' in window) {
+    new IntersectionObserver(es => { inView = es[0].isIntersecting; }).observe(flow);
+    setInterval(() => {
+      if (!inView) return;
+      k = (k + 1) % (steps.length + 2);
+      steps.forEach((li, i) => { li.classList.toggle('on', i === k); li.classList.toggle('done', i < k && k <= steps.length); });
+    }, 850);
+  }
 }
 
 new ResizeObserver(layout).observe(field);
