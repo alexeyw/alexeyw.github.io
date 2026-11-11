@@ -8,6 +8,7 @@ LANGS = ('en', 'es', 'ru')
 SITE = 'https://alexeyw.github.io/'
 GH = 'https://github.com/alexeyw/'
 KNOT = GH + 'knotwork'
+LOT = GH + 'lot-map'
 PLAY_KNOT = 'https://play.google.com/store/apps/details?id=app.knotwork.android'
 FDROID_KNOT = 'https://f-droid.org/packages/app.knotwork.android/'
 PLAY_SEEDS = 'https://play.google.com/store/apps/details?id=com.avolodin.colored.seeds'
@@ -203,6 +204,11 @@ RECORDS = [
            'ru': 'Спокойная логическая головоломка в Google Play, переписана и перевыпущена как 3.0 в 2026 году. Загрузок: {{seeds_downloads}}. Оценка: {{seeds_rating}}, всего оценок: {{seeds_ratings}}. Без рекламы и слежки.'},
      'kw': 'game games игра игры juego juegos puzzle головоломка puzle google play released опубликовано downloads загрузки'},
 
+    {'id': 'lotmap', 'k': 'project', 's': 'v', 'from': '2026-11', 'py': .40, 'a': 'l', 't': 'lot-map', 'l': 'lot-map', 'src': LOT,
+     'x': {'en': 'A live map of what Claude Code is doing, drawn beside the chat: the agent in the centre, ten stations around it, a pulse for every call. Open source, MIT. Stars: {{lot_stars}}, forks: {{lot_forks}}.',
+           'es': 'Un mapa en vivo de lo que hace Claude Code, dibujado junto al chat: el agente en el centro, diez estaciones alrededor y un pulso por cada llamada. Código abierto, MIT. Estrellas: {{lot_stars}}, forks: {{lot_forks}}.',
+           'ru': 'Живая карта того, что делает Claude Code, рядом с чатом: агент в центре, десять станций вокруг, импульс на каждый вызов. Открытый код, MIT. Звёзд: {{lot_stars}}, форков: {{lot_forks}}.'},
+     'kw': 'map карта mapa claude code plugin mod плагин мод open source opensource открытый код visualization визуализация hooks agents агенты live'},
     {'id': 'muruna', 'k': 'role', 's': 's', 'from': '2022-06', 'to': 'now', 'py': .56, 'a': 'b', 't': 'Senior Android Developer, Muruna', 'l': 'Muruna',
      'x': {'en': 'Retail-banking Android modules for two banks, [#6] and [#10], working remotely. New features in Clean Architecture with MVVM and Hilt, API migrations, networking refactors, unit and UI tests.',
            'es': 'Módulos Android de banca minorista para dos bancos, [#6] y [#10], en remoto. Nuevas funciones con Clean Architecture, MVVM y Hilt, migraciones de API, refactorización de red, pruebas unitarias y de UI.',
@@ -287,7 +293,7 @@ LINKS = [
     ('era1c', 'freelance', 1), ('freelance', 'knotable', 1), ('knotable', 'swing', 1), ('swing', 'mobdev', 1), ('mobdev', 'muruna', 1),
     ('android', 'muruna'), ('android', 'mobdev'), ('android', 'swing'), ('android', 'knotable'), ('android', 'freelance'), ('android', 'knotwork'), ('android', 'seeds'),
     ('compose', 'android'), ('compose', 'knotwork'), ('compose', 'seeds'), ('clean', 'muruna'), ('clean', 'mobdev'), ('clean', 'knotwork'), ('litert', 'knotwork'), ('mcp', 'knotwork'),
-    ('ainative', 'knotwork'), ('ainative', 'aidd'), ('ainative', 'sdd'), ('ainative', 'context'), ('ainative', 'guard'), ('ainative', 'gates'), ('aidd', 'knotwork'), ('gates', 'knotwork'), ('cert', 'aidd'),
+    ('ainative', 'knotwork'), ('ainative', 'lotmap'), ('aidd', 'lotmap'), ('ainative', 'aidd'), ('ainative', 'sdd'), ('ainative', 'context'), ('ainative', 'guard'), ('ainative', 'gates'), ('aidd', 'knotwork'), ('gates', 'knotwork'), ('cert', 'aidd'),
     # the order of a pair sets which way its curve bends: android first keeps this one clear of the Muruna node
     ('android', 'fintech'), ('fintech', 'compose'), ('fintech', 'muruna'), ('fintech', 'mobdev'), ('ble', 'android'), ('testing', 'muruna'), ('testing', 'swing'),
     ('remote', 'knotable'), ('remote', 'swing'), ('remote', 'mobdev'), ('remote', 'muruna'), ('remote', 'freelance'),
@@ -331,6 +337,28 @@ CASES = [
      'shots': [('knotwork-approval.webp', 520, 1098, {'en': 'A destructive tool call waits for approval', 'es': 'Una llamada destructiva espera aprobación', 'ru': 'Опасный вызов инструмента ждёт подтверждения'}),
                ('knotwork-pipeline.webp', 520, 1004, {'en': 'Pipeline editor', 'es': 'Editor de flujos', 'ru': 'Редактор пайплайнов'}),
                ('knotwork-tools.webp', 520, 1156, {'en': 'Tools with risk levels and MCP servers', 'es': 'Herramientas con niveles de riesgo y servidores MCP', 'ru': 'Инструменты с уровнями риска и серверы MCP'})]},
+    {'id': 'lotmap', 'name': 'lot-map', 'rec': 'lotmap', 'paper': False,
+     'kicker': {'en': 'A live map of what Claude Code is doing', 'es': 'Un mapa en vivo de lo que hace Claude Code', 'ru': 'Живая карта того, что делает Claude Code'},
+     'lede': {'en': 'A panel beside the chat: the agent in the centre, ten stations around it, and a pulse for every tool call, model step and hook. The idea and the decisions are his; the code is his agent\'s.',
+              'es': 'Un panel junto al chat: el agente en el centro, diez estaciones alrededor y un pulso por cada llamada a una herramienta, paso del modelo y hook. La idea y las decisiones son suyas; el código es de su agente.',
+              'ru': 'Панель рядом с чатом: агент в центре, десять станций вокруг и импульс на каждый вызов инструмента, шаг модели и хук. Идея и решения его; код написал его агент.'},
+     'points': {'en': ['Published on 9 November 2026. Every commit carries the agent\'s co-author line, and changes go in through pull requests.',
+                       'Labels carry names only: no command lines, file contents, memory text or passwords. A reader\'s audit of the code found a case that broke this rule, and the fix went out the same day, with tests.',
+                       'An outside contributor\'s fix for Windows paths was read, run and merged the day it arrived.',
+                       'It makes no network requests, reads no files and runs no processes. Labels in five languages.'],
+                'es': ['Publicado el 9 de noviembre de 2026. Cada commit lleva la línea de coautoría del agente, y los cambios entran por pull requests.',
+                       'Las etiquetas llevan solo nombres: ni líneas de comandos, ni contenido de archivos, ni texto de la memoria, ni contraseñas. La auditoría de un lector encontró un caso que rompía esta regla, y la corrección salió el mismo día, con pruebas.',
+                       'La corrección de un colaborador externo para las rutas de Windows se leyó, se ejecutó y se fusionó el día en que llegó.',
+                       'No hace solicitudes de red, no lee archivos y no ejecuta procesos. Etiquetas en cinco idiomas.'],
+                'ru': ['Опубликована 9 ноября 2026 года. В каждом коммите стоит строка соавторства агента, изменения приходят через pull request.',
+                       'В подписях только имена: ни командных строк, ни содержимого файлов, ни текста памяти, ни паролей. Читатель кода нашёл случай, который нарушал это правило, и исправление вышло в тот же день, с тестами.',
+                       'Исправление путей Windows от стороннего участника прочитано, запущено и слито в день, когда пришло.',
+                       'Не делает сетевых запросов, не читает файлы и не запускает процессы. Подписи на пяти языках.']},
+     'ev': [('stars', '{{lot_stars}}'), ('forks', '{{lot_forks}}'), ('prs', '{{lot_prs}}'), ('commits', '{{lot_commits}}'), ('license', 'MIT')],
+     'links': [('GitHub', LOT), ('Windows fix', LOT + '/pull/11'), ('Audit fixes', LOT + '/pull/6')],
+     'shots': [('lotmap-working.webp', 520, 866, {'en': 'Files are being read', 'es': 'Se leen archivos', 'ru': 'Читаются файлы'}),
+               ('lotmap-agents.webp', 520, 866, {'en': 'Subagents at work', 'es': 'Subagentes trabajando', 'ru': 'Работают подагенты'}),
+               ('lotmap-light.webp', 520, 866, {'en': 'Light theme', 'es': 'Tema claro', 'ru': 'Светлая тема'})]},
     {'id': 'seeds', 'name': 'Colored Seeds', 'rec': 'seeds',
      'kicker': {'en': 'Logic puzzle on Google Play', 'es': 'Puzle lógico en Google Play', 'ru': 'Логическая головоломка в Google Play'},
      'lede': {'en': 'Match pairs of colored seeds, clear rows and empty the board. A long-running game, rewritten and relaunched as 3.0 in 2026.',

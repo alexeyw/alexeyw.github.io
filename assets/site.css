@@ -361,6 +361,7 @@ dialog::backdrop{background:rgba(5,6,9,.74)}
   /* system faces: variable web fonts split words when a PDF is parsed */
   :root{color-scheme:light;--ground:#fff;--raised:#fff;--bone:#111;--ash:#444;--line:#999;--accent:#111;--accent-hot:#111;--sans:Helvetica,Arial,sans-serif;--mono:Helvetica,Arial,sans-serif}
   .scr,.ar{display:none}
+  .np{display:none!important}
   .prn{display:inline}
   html,body{background:#fff;color:#111;font-size:9.4pt;line-height:1.36}
   .sheet,.index,dialog,.shots,.stamp,.chk,.sum-s,.sec-s,.cap-e,.cl-note,.oldbtn,.end,.kicker,#sec-ref,.case-t ul{display:none!important}

@@ -1,8 +1,8 @@
 {
-  "checked": "2026-11-10",
+  "checked": "2026-11-11",
   "facts": {
-    "stars": 49,
-    "forks": 6,
+    "stars": 50,
+    "forks": 7,
     "release": "0.14.0",
     "releases": 21,
     "commits": 2076,
@@ -39,6 +39,10 @@
       "Room",
       "WorkManager"
     ],
+    "lot_stars": 240,
+    "lot_forks": 25,
+    "lot_prs": 9,
+    "lot_commits": 11,
     "seeds_downloads": "50K+",
     "seeds_rating": "4.0",
     "seeds_ratings": "551",
