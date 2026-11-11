@@ -59,6 +59,14 @@ def gather():
     # Google Play puts the rating markup only in the page it serves to plain HTTP clients.
     _, page = fetch(C.PLAY_SEEDS + '&hl=en', {'User-Agent': 'curl/8.7.1', 'Accept-Language': 'en'})
 
+    lot = gh('repos/alexeyw/lot-map')
+    lot_log = subprocess.check_output(['gh', 'api', '--paginate', 'repos/alexeyw/lot-map/commits?per_page=100', '--jq', '.[].commit.message'], text=True)
+    lot_commits = len(gh('repos/alexeyw/lot-map/commits?per_page=100'))
+    if lot_commits >= 100:
+        sys.exit('lot-map has a hundred commits or more: count them page by page before calling the figure verified.')
+    if len(re.findall(r'Co-Authored-By: Claude', lot_log, re.I)) < lot_commits:
+        sys.exit('A lot-map commit has no agent co-author line, so the case file can no longer say that every commit carries one.')
+
     def pick(pattern):
         found = re.search(pattern, page)
         if not found:
@@ -77,6 +85,10 @@ def gather():
         'golden': sum(1 for x in paths if re.search(r'src/test/snapshots/.*\.png$', x)),
         'workflows': workflows,
         'skills': sorted(k for k, how in C.SKILL_PROOF.items() if (answers[how] if how in answers else re.search(how, catalog))),
+        'lot_stars': lot['stargazers_count'],
+        'lot_forks': lot['forks_count'],
+        'lot_prs': gh('search/issues?q=repo:alexeyw/lot-map+is:pr+is:merged&per_page=1')['total_count'],
+        'lot_commits': lot_commits,
         'seeds_downloads': pick(r'>([0-9.,]+[KMB]?\+)</div><div[^>]*>Downloads'),
         'seeds_rating': '%.1f' % float(pick(r'"ratingValue":"([^"]+)"')),
         'seeds_ratings': pick(r'"ratingCount":"([^"]+)"'),
@@ -254,7 +266,7 @@ def case_html(c, lang, base, fill, checked):
     evidence = ''.join(f'<div><dt>{E(C.LBL[k][lang])}</dt><dd>{E(fill(v))}</dd></div>' for k, v in c['ev'])
     links = ' '.join(f'<a href="{E(u)}" target="_blank" rel="noopener">{E(n)}<span class="ar"> ↗</span></a>' for n, u in c['links'])
     shots = ''.join(f'<figure style="--w:{min(w, 256) if w == h else 200}px"><img src="{base}assets/{f}" width="{w}" height="{h}" loading="lazy" alt="{E(cap[lang])}"><figcaption>{E(cap[lang])}</figcaption></figure>' for f, w, h, cap in c['shots'])
-    return f'''<article class="case" id="case-{c['id']}">
+    return f'''<article class="case{'' if c.get('paper', True) else ' np'}" id="case-{c['id']}">
   <header class="case-h"><h3>{E(c['name'])}</h3><span class="stamp v">{E(t['stV'])}</span><span class="chk" data-chk>{E(t['checked'])} {checked}</span></header>
   <p class="kicker">{E(c['kicker'][lang])}</p>
   <div class="case-g">
