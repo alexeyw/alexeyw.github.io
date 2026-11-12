@@ -60,12 +60,20 @@ def gather():
     _, page = fetch(C.PLAY_SEEDS + '&hl=en', {'User-Agent': 'curl/8.7.1', 'Accept-Language': 'en'})
 
     lot = gh('repos/alexeyw/lot-map')
-    lot_log = subprocess.check_output(['gh', 'api', '--paginate', 'repos/alexeyw/lot-map/commits?per_page=100', '--jq', '.[].commit.message'], text=True)
-    lot_commits = len(gh('repos/alexeyw/lot-map/commits?per_page=100'))
+    lot_log = gh('repos/alexeyw/lot-map/commits?per_page=100')
+    lot_commits = len(lot_log)
     if lot_commits >= 100:
         sys.exit('lot-map has a hundred commits or more: count them page by page before calling the figure verified.')
-    if len(re.findall(r'Co-Authored-By: Claude', lot_log, re.I)) < lot_commits:
-        sys.exit('A lot-map commit has no agent co-author line, so the case file can no longer say that every commit carries one.')
+    # A commit squashed from an outside contributor's pull request is theirs; the case file speaks of his own.
+    bare = [c['sha'][:7] for c in lot_log if (c.get('author') or {}).get('login') == 'alexeyw' and not re.search(r'Co-Authored-By: Claude', c['commit']['message'], re.I)]
+    if bare:
+        sys.exit(f'lot-map commits of his own without the agent co-author line: {", ".join(bare)}. The case file can no longer say that each carries one.')
+    lot_plugin = json.loads(fetch('https://raw.githubusercontent.com/alexeyw/lot-map/main/.claude-plugin/plugin.json')[1])
+    lot_langs = len(lot_plugin['userConfig']['language']['options']) if 'userConfig' in lot_plugin else None
+    if not lot_langs:
+        sys.exit('lot-map plugin.json no longer lists its languages where the build looks; fix the path before calling the figure verified.')
+    # The case file says a check runs on every pull request: the workflow has to be there.
+    fetch('https://raw.githubusercontent.com/alexeyw/lot-map/main/.github/workflows/check.yml')
 
     def pick(pattern):
         found = re.search(pattern, page)
@@ -89,6 +97,9 @@ def gather():
         'lot_forks': lot['forks_count'],
         'lot_prs': gh('search/issues?q=repo:alexeyw/lot-map+is:pr+is:merged&per_page=1')['total_count'],
         'lot_commits': lot_commits,
+        'lot_outside': gh('search/issues?q=repo:alexeyw/lot-map+is:pr+is:merged+-author:alexeyw&per_page=1')['total_count'],
+        'lot_langs': lot_langs,
+        'lot_release': gh('repos/alexeyw/lot-map/releases/latest')['tag_name'].lstrip('v'),
         'seeds_downloads': pick(r'>([0-9.,]+[KMB]?\+)</div><div[^>]*>Downloads'),
         'seeds_rating': '%.1f' % float(pick(r'"ratingValue":"([^"]+)"')),
         'seeds_ratings': pick(r'"ratingCount":"([^"]+)"'),
