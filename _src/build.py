@@ -275,13 +275,18 @@ def first_screen(lang, base, langs_nav, checked, nv, ns, nk, fill):
 def case_html(c, lang, base, fill, checked):
     t = C.UI[lang]
     evidence = ''.join(f'<div><dt>{E(C.LBL[k][lang])}</dt><dd>{E(fill(v))}</dd></div>' for k, v in c['ev'])
-    links = ' '.join(f'<a href="{E(u)}" target="_blank" rel="noopener">{E(n)}<span class="ar"> ↗</span></a>' for n, u in c['links'])
+    # On paper a case may keep only its first links: "Windows fix" says nothing to someone reading a CV.
+    keep = c.get('cv_links', len(c['links']))
+    off = ' class="scr"'
+    links = ' '.join(f'<a{"" if i < keep else off} href="{E(u)}" target="_blank" rel="noopener">{E(n)}<span class="ar"> ↗</span></a>' for i, (n, u) in enumerate(c['links']))
+    # A case may say itself more shortly on paper: the printed CV has no kicker and no points to lean on.
+    lede = E(c['lede'][lang]) if 'cv' not in c else f'<span class="scr">{E(c["lede"][lang])}</span><span class="prn">{E(c["cv"][lang])}</span>'
     shots = ''.join(f'<figure style="--w:{min(w, 256) if w == h else 200}px"><img src="{base}assets/{f}" width="{w}" height="{h}" loading="lazy" alt="{E(cap[lang])}"><figcaption>{E(cap[lang])}</figcaption></figure>' for f, w, h, cap in c['shots'])
     return f'''<article class="case{'' if c.get('paper', True) else ' np'}" id="case-{c['id']}">
   <header class="case-h"><h3>{E(c['name'])}</h3><span class="stamp v">{E(t['stV'])}</span><span class="chk" data-chk>{E(t['checked'])} {checked}</span></header>
   <p class="kicker">{E(c['kicker'][lang])}</p>
   <div class="case-g">
-    <div class="case-t"><p>{E(c['lede'][lang])}</p>{ul(c['points'][lang], fill)}</div>
+    <div class="case-t"><p>{lede}</p>{ul(c['points'][lang], fill)}</div>
     <div class="case-s"><dl class="ev">{evidence}</dl><p class="case-l">{links}</p></div>
   </div>
   <div class="shots">{shots}</div>
