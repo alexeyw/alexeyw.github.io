@@ -1,5 +1,5 @@
 {
-  "checked": "2026-11-12",
+  "checked": "2026-11-13",
   "facts": {
     "stars": 52,
     "forks": 7,
@@ -8,7 +8,7 @@
     "commits": 2076,
     "agent": 19,
     "window": 30,
-    "prs": 614,
+    "prs": 615,
     "golden": 799,
     "workflows": 4,
     "skills": [
@@ -39,13 +39,13 @@
       "Room",
       "WorkManager"
     ],
-    "lot_stars": 602,
-    "lot_forks": 71,
-    "lot_prs": 40,
-    "lot_commits": 42,
-    "lot_outside": 6,
+    "lot_stars": 717,
+    "lot_forks": 83,
+    "lot_prs": 51,
+    "lot_commits": 53,
+    "lot_outside": 10,
     "lot_langs": 7,
-    "lot_release": "0.6.0",
+    "lot_release": "0.7.0",
     "seeds_downloads": "50K+",
     "seeds_rating": "4.0",
     "seeds_ratings": "551",
