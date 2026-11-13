@@ -73,7 +73,12 @@ def gather():
     if not lot_langs:
         sys.exit('lot-map plugin.json no longer lists its languages where the build looks; fix the path before calling the figure verified.')
     # The case file says a check runs on every pull request: the workflow has to be there.
-    fetch('https://raw.githubusercontent.com/alexeyw/lot-map/main/.github/workflows/check.yml')
+    lot_check = fetch('https://raw.githubusercontent.com/alexeyw/lot-map/main/.github/workflows/check.yml')[1]
+    # It also says that check holds the mod to the list of what it calls, and links to the page that explains it.
+    if 'check-surface' not in lot_check:
+        sys.exit('lot-map check.yml no longer runs the surface check; the case file says it does.')
+    fetch('https://raw.githubusercontent.com/alexeyw/lot-map/main/scripts/surface.txt')
+    fetch('https://raw.githubusercontent.com/alexeyw/lot-map/main/PRINCIPLES.md')
 
     def pick(pattern):
         found = re.search(pattern, page)
