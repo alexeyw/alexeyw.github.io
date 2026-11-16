@@ -65,9 +65,12 @@ def gather():
     if lot_commits >= 100:
         sys.exit('lot-map has a hundred commits or more: count them page by page before calling the figure verified.')
     # A commit squashed from an outside contributor's pull request is theirs; the case file speaks of his own.
-    bare = [c['sha'][:7] for c in lot_log if (c.get('author') or {}).get('login') == 'alexeyw' and not re.search(r'Co-Authored-By: Claude', c['commit']['message'], re.I)]
+    # A merge commit carries no change of its own: what it brings in was committed before it, and those commits are
+    # checked here like any other. The 0.9.0 release merge (46d1c11) has GitHub's default message and no co-author line.
+    bare = [c['sha'][:7] for c in lot_log if (c.get('author') or {}).get('login') == 'alexeyw' and len(c.get('parents', [])) < 2
+            and not re.search(r'Co-Authored-By: Claude', c['commit']['message'], re.I)]
     if bare:
-        sys.exit(f'lot-map commits of his own without the agent co-author line: {", ".join(bare)}. The case file can no longer say that each carries one.')
+        sys.exit(f'lot-map changes of his own committed without the agent co-author line: {", ".join(bare)}. The case file can no longer say that each carries one.')
     lot_plugin = json.loads(fetch('https://raw.githubusercontent.com/alexeyw/lot-map/main/.claude-plugin/plugin.json')[1])
     lot_langs = len(lot_plugin['userConfig']['language']['options']) if 'userConfig' in lot_plugin else None
     if not lot_langs:
