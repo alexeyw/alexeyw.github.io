@@ -39,7 +39,7 @@
       "Room",
       "WorkManager"
     ],
-    "lot_stars": 916,
+    "lot_stars": 918,
     "lot_forks": 93,
     "lot_prs": 66,
     "lot_commits": 68,
@@ -47,8 +47,6 @@
     "lot_langs": 7,
     "lot_release": "0.9.0",
     "seeds_downloads": "50K+",
-    "seeds_rating": "3.8",
-    "seeds_ratings": "551",
     "seeds_updated": "Oct 31, 2026"
   }
 }

@@ -108,9 +108,9 @@ def gather():
         'lot_outside': gh('search/issues?q=repo:alexeyw/lot-map+is:pr+is:merged+-author:alexeyw&per_page=1')['total_count'],
         'lot_langs': lot_langs,
         'lot_release': gh('repos/alexeyw/lot-map/releases/latest')['tag_name'].lstrip('v'),
+        # No rating: Google Play gives one per country and per kind of device (3.8 for the United States, 4.4 for Russia
+        # and none for Chile on 2026-11-16), so no single figure reads the same to everyone who opens the page.
         'seeds_downloads': pick(r'>([0-9.,]+[KMB]?\+)</div><div[^>]*>Downloads'),
-        'seeds_rating': '%.1f' % float(pick(r'"ratingValue":"([^"]+)"')),
-        'seeds_ratings': pick(r'"ratingCount":"([^"]+)"'),
         'seeds_updated': pick(r'Updated on</div><div[^>]*>([^<]+)'),
     }
 
