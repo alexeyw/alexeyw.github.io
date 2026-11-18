@@ -377,17 +377,23 @@ dialog::backdrop{background:rgba(5,6,9,.74)}
   .sec{padding:0 0 7pt;border:0}
   .sec>h2{margin:0 0 4pt;padding-bottom:1.5pt;border-bottom:.6pt solid #111;font:700 8.4pt/1.3 var(--sans);letter-spacing:.06em;text-transform:uppercase}
   .sum{margin:0;font:400 9.4pt/1.38 var(--sans);max-width:none}
-  .job{display:block;padding:0 0 5pt;border:0;break-inside:avoid}
-  /* on paper the date floats beside the job title as it always did: the wrapper steps aside */
+  /* The PDF's text order is Chrome's paint order, and a résumé parser reads it in that order.
+     A float is painted before the text around it and a positioned box after it, so the date
+     used to come out above all job titles and every bullet at the end of the page. On paper
+     the date and the text share one grid cell instead: the date sits at the right of the
+     title as before and is read together with its own job. The wrapper steps aside. */
+  .job{display:grid;grid-template-columns:minmax(0,1fr);padding:0 0 5pt;border:0;break-inside:avoid}
   .when{display:contents}
   .span{display:none}
-  .job time{float:right;font:400 8.2pt/1.5 var(--mono);font-stretch:85%;color:#333}
+  .job time{grid-row:1;grid-column:1;justify-self:end;align-self:start;font:400 8.2pt/1.5 var(--mono);font-stretch:85%;color:#333}
+  .job>div:last-child{grid-row:1;grid-column:1}
   .job h3{font:500 9.8pt/1.3 var(--sans)}
   .job .org a{text-decoration:none}
   .where{margin:0 0 2pt;font-size:8.6pt;color:#444}
   .body ul{gap:1pt}
-  .body li{padding-left:9pt;max-width:none}
-  .body li::before{left:0;top:.62em;width:5pt;height:.5pt;background:#111}
+  /* the dash stays in the line it marks: an inline box, not a positioned one (see .job above) */
+  .body li{position:static;padding-left:9pt;max-width:none}
+  .body li::before{position:static;display:inline-block;vertical-align:middle;margin:0 4pt 0 -9pt;width:5pt;height:.5pt;background:#111}
   .case{display:block;padding:0 0 4pt;border:0;break-inside:avoid}
   .case+.case{padding-top:0;border:0}
   .case-h{display:inline}
