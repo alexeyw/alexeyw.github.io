@@ -357,6 +357,8 @@ dialog::backdrop{background:rgba(5,6,9,.74)}
 
 /* ---- paper: an ordinary two-page CV ---- */
 @media print{
+  /* a word joined by hyphens stays on one line: broken after the hyphen, a text extractor that joins lines reads it as one word without it */
+  .nb{white-space:nowrap}
   @page{size:A4;margin:12mm 14mm}
   /* system faces: variable web fonts split words when a PDF is parsed */
   :root{color-scheme:light;--ground:#fff;--raised:#fff;--bone:#111;--ash:#444;--line:#999;--accent:#111;--accent-hot:#111;--sans:Helvetica,Arial,sans-serif;--mono:Helvetica,Arial,sans-serif}

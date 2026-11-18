@@ -27,7 +27,15 @@ import content as C  # noqa: E402
 
 CHROME = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
 E = html.escape
+NB = re.compile(r'\w+(?:-\w+)+')
 UA = {'User-Agent': 'Mozilla/5.0 (dossier link check)', 'Accept-Language': 'en'}
+
+
+def T(s):
+    """Escaped text for the printed CV: a word joined by hyphens stays on one line there (.nb in the print styles).
+    Broken after its hyphen at a line's end, "high-traffic" is read by a text extractor that joins lines as "hightraffic":
+    Claude Code's Read tool gave exactly that for the CV built on 2026-11-18."""
+    return NB.sub(lambda m: '<span class="nb">' + m.group(0) + '</span>', E(s))
 
 
 def gh(path):
@@ -190,7 +198,7 @@ def rd(n):
 def ul(items, fill):
     if not items:
         return ''
-    return '<ul>' + ''.join(f'<li>{E(fill(i))}</li>' for i in items) + '</ul>'
+    return '<ul>' + ''.join(f'<li>{T(fill(i))}</li>' for i in items) + '</ul>'
 
 
 def counts():
@@ -288,7 +296,7 @@ def case_html(c, lang, base, fill, checked):
     off = ' class="scr"'
     links = ' '.join(f'<a{"" if i < keep else off} href="{E(u)}" target="_blank" rel="noopener">{E(n)}<span class="ar"> ↗</span></a>' for i, (n, u) in enumerate(c['links']))
     # A case may say itself more shortly on paper: the printed CV has no kicker and no points to lean on.
-    lede = E(c['lede'][lang]) if 'cv' not in c else f'<span class="scr">{E(c["lede"][lang])}</span><span class="prn">{E(c["cv"][lang])}</span>'
+    lede = T(c['lede'][lang]) if 'cv' not in c else f'<span class="scr">{E(c["lede"][lang])}</span><span class="prn">{T(c["cv"][lang])}</span>'
     shots = ''.join(f'<figure style="--w:{min(w, 256) if w == h else 200}px"><img src="{base}assets/{f}" width="{w}" height="{h}" loading="lazy" alt="{E(cap[lang])}"><figcaption>{E(cap[lang])}</figcaption></figure>' for f, w, h, cap in c['shots'])
     return f'''<article class="case{'' if c.get('paper', True) else ' np'}" id="case-{c['id']}">
   <header class="case-h"><h3>{E(c['name'])}</h3><span class="stamp v">{E(t['stV'])}</span><span class="chk" data-chk>{E(t['checked'])} {checked}</span></header>
@@ -311,7 +319,7 @@ def job_html(j, lang):
     return f'''<article class="job">
   <div class="when"><time>{E(when(j, lang))}</time><i class="span{' now' if j['to'] == 'now' else ''}" style="--a:{a:.3f};--b:{b:.3f}" aria-hidden="true"></i></div>
   <div><h3>{E(L(j['title'], lang))}<span class="org">, {org_html}</span></h3>
-  <p class="where">{E(j['where'][lang])}</p>{ul(j['points'][lang], str)}{note}{old}</div>
+  <p class="where">{T(j['where'][lang])}</p>{ul(j['points'][lang], str)}{note}{old}</div>
 </article>'''
 
 
@@ -346,7 +354,7 @@ def caps_html(lang, facts):
             ev = f'{E(t["capsEv"].format(v=hits, n=len(parts)))} <a href="{C.CATALOG}" target="_blank" rel="noopener">{E(t["capsSrc"])} ↗</a>'
         else:
             ev = E(t['stS'])
-        out += (f'<div class="cap"><h3>{E(L(c["l"], lang))}</h3><div><p><span class="scr">{chips}</span><span class="prn">{E(c["items"])}</span></p>'
+        out += (f'<div class="cap"><h3>{T(L(c["l"], lang))}</h3><div><p><span class="scr">{chips}</span><span class="prn">{T(c["items"])}</span></p>'
                 f'<p class="cap-e"><i class="g {"v" if hits else "s"}"></i><span>{ev}</span></p></div></div>')
     return out
 
@@ -362,7 +370,7 @@ def doc_html(lang, base, fill, checked, facts):
     ai = ''
     for a in C.AI_NATIVE:
         ev = E(fill(a['ev'][lang])) if a.get('ev') else E(t['srcK'])
-        ai += f'<div class="cap" data-p="{a["id"]}"><h3>{E(a["t"])}</h3><div><p>{E(a["x"][lang])}</p><p class="cap-e"><i class="g {a["s"]}"></i>{ev}</p></div></div>'
+        ai += f'<div class="cap" data-p="{a["id"]}"><h3>{T(a["t"])}</h3><div><p>{T(a["x"][lang])}</p><p class="cap-e"><i class="g {a["s"]}"></i>{ev}</p></div></div>'
     caps = caps_html(lang, facts)
     axis = f'<div class="job-ax scr" aria-hidden="true"><span>{AXIS[0]}</span><span>{int(NOW_Y)}</span></div>'
     ref = ''.join(f'<li>{E(x)}</li>' for x in t['ref'])
@@ -374,16 +382,16 @@ def doc_html(lang, base, fill, checked, facts):
       <p class="pr-role">{E(t['role'])}</p>
       <p class="pr-contact">{E(t['vBased'])} · <a class="pr-mail" href="mailto:alexeyw@gmail.com">alexeyw@gmail.com</a> · github.com/alexeyw · linkedin.com/in/alexeyw · alexeyw.github.io</p>
     </header>
-    <section class="sec" id="sec-summary"><h2>{title['summary']}</h2><p class="sum">{E(t['summary'])}</p><p class="sum-s"><span class="stamp s">{E(t['stS'])}</span><span class="chk">{E(t['srcCv'])}, {E(t['cvDate'])}</span></p></section>
+    <section class="sec" id="sec-summary"><h2>{title['summary']}</h2><p class="sum">{T(t['summary'])}</p><p class="sum-s"><span class="stamp s">{E(t['stS'])}</span><span class="chk">{E(t['srcCv'])}, {E(t['cvDate'])}</span></p></section>
     <section class="sec" id="sec-cases"><h2>{title['cases']}</h2>{cases}</section>
-    <section class="sec" id="sec-ai"><h2>{title['ai']}</h2><p class="ref-i">{E(t['aiIntro'])}</p>{flow_html(lang)}{ai}</section>
+    <section class="sec" id="sec-ai"><h2>{title['ai']}</h2><p class="ref-i">{T(t['aiIntro'])}</p>{flow_html(lang)}{ai}</section>
     <section class="sec" id="sec-chronicle"><h2>{title['chronicle']}</h2><p class="sec-s"><span class="stamp s">{E(t['stS'])}</span><span class="chk">{E(t['srcCv'])}, {E(t['cvDate'])}</span></p>{axis}{jobs}</section>
     <section class="sec" id="sec-caps"><h2>{title['caps']}</h2>{caps}</section>
     <section class="sec" id="sec-ref"><h2>{title['ref']}</h2><p class="ref-i">{E(t['refIntro'])}</p><ul class="ref">{ref}</ul><p class="sum-s"><span class="stamp k">{E(t['stK'])}</span><span class="chk">{E(t['refFoot'])}</span></p></section>
     <section class="sec" id="sec-papers"><h2>{title['papers']}</h2>
-      <div class="cap"><h3>{E(t['pEdu'])}</h3><div><p>{E(t['vEdu'])}</p></div></div>
-      <div class="cap"><h3>{E(t['pCert'])}</h3><div><p><a href="{C.CERT_URL}" target="_blank" rel="noopener">GitHub Copilot, Microsoft</a>, {E(t['vCert'])}; {E(C.CERT)}</p><p class="cap-e"><i class="g v"></i>GitHub Copilot: learn.microsoft.com, {E(t['checked'])} {checked}</p></div></div>
-      <div class="cap"><h3>{E(t['pLangs'])}</h3><div><p>{E(t['vLangs'])}</p></div></div>
+      <div class="cap"><h3>{E(t['pEdu'])}</h3><div><p>{T(t['vEdu'])}</p></div></div>
+      <div class="cap"><h3>{E(t['pCert'])}</h3><div><p><a href="{C.CERT_URL}" target="_blank" rel="noopener">GitHub Copilot, Microsoft</a>, {T(t['vCert'])}; {T(C.CERT)}</p><p class="cap-e"><i class="g v"></i>GitHub Copilot: learn.microsoft.com, {E(t['checked'])} {checked}</p></div></div>
+      <div class="cap"><h3>{E(t['pLangs'])}</h3><div><p>{T(t['vLangs'])}</p></div></div>
     </section>
     <footer class="end"><button class="btn js-contact" type="button">{E(t['contact'])}</button><p>{E(t['kept'])} {checked}.</p></footer>
   </div>
