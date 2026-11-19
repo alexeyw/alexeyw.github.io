@@ -1,7 +1,7 @@
 {
-  "checked": "2026-11-18",
+  "checked": "2026-11-19",
   "facts": {
-    "stars": 53,
+    "stars": 54,
     "forks": 8,
     "release": "0.15.0",
     "releases": 22,
@@ -39,13 +39,13 @@
       "Room",
       "WorkManager"
     ],
-    "lot_stars": 996,
-    "lot_forks": 109,
-    "lot_prs": 78,
-    "lot_commits": 80,
-    "lot_outside": 17,
+    "lot_stars": 1016,
+    "lot_forks": 113,
+    "lot_prs": 90,
+    "lot_commits": 92,
+    "lot_outside": 22,
     "lot_langs": 7,
-    "lot_release": "0.10.0",
+    "lot_release": "0.11.0",
     "seeds_downloads": "50K+",
     "seeds_updated": "Oct 31, 2026"
   }
