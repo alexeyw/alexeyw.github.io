@@ -68,10 +68,17 @@ def gather():
     _, page = fetch(C.PLAY_SEEDS + '&hl=en', {'User-Agent': 'curl/8.7.1', 'Accept-Language': 'en'})
 
     lot = gh('repos/alexeyw/lot-map')
-    lot_log = gh('repos/alexeyw/lot-map/commits?per_page=100')
+    # Every commit of main, page by page: one page holds a hundred at most (until 2026-11-19 the build read one
+    # page and stopped at a hundred commits; there were 92 that day).
+    lot_log = []
+    for sheet in range(1, 51):  # not `page`: that name holds the Google Play page read above
+        batch = gh(f'repos/alexeyw/lot-map/commits?per_page=100&page={sheet}')
+        lot_log += batch
+        if len(batch) < 100:
+            break
+    else:
+        sys.exit('lot-map has five thousand commits or more: the count stopped at fifty pages. Raise the limit before calling the figure verified.')
     lot_commits = len(lot_log)
-    if lot_commits >= 100:
-        sys.exit('lot-map has a hundred commits or more: count them page by page before calling the figure verified.')
     # A commit squashed from an outside contributor's pull request is theirs; the case file speaks of his own.
     # A merge commit carries no change of its own: what it brings in was committed before it, and those commits are
     # checked here like any other. The 0.9.0 release merge (46d1c11) has GitHub's default message and no co-author line.
