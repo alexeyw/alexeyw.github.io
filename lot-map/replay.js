@@ -164,7 +164,7 @@ copy.addEventListener('click', async () => {
     await navigator.clipboard.writeText($('install').textContent.trim())
     copy.textContent = 'Copied'
   } catch {
-    copy.textContent = 'Select and copy'
+    copy.textContent = 'Select'
   }
   setTimeout(() => (copy.textContent = 'Copy'), 1600)
 })
