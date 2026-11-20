@@ -1,0 +1,51 @@
+<!doctype html>
+<!-- The share picture of the lot-map page, 1200x630: the map at one moment of the page's own session, drawn by the
+     mod's code, beside the page's title. Not published as a page; og.sh takes a picture of it into ../../lot-map/og.png. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+@font-face{font-family:'Geologica';font-weight:300 500;src:url(../../assets/fonts/geologica-latin.woff2) format('woff2')}
+@font-face{font-family:'Martian Mono';font-weight:200 600;font-stretch:75% 112.5%;src:url(../../assets/fonts/martian-mono-latin.woff2) format('woff2')}
+html,body{margin:0;width:1200px;height:630px;background:#0a0c11;color:#ebe6dc;overflow:hidden}
+body{display:grid;grid-template-columns:600px 1fr;align-items:center;font-family:'Geologica',sans-serif}
+#map{width:588px;margin-left:12px}
+#map svg{display:block;width:100%;height:auto}
+.words{padding:0 64px 0 28px}
+.kicker{font:500 15px/1.5 'Martian Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#9ba1ab}
+h1{font:300 64px/1.04 'Geologica',sans-serif;letter-spacing:-.02em;margin:18px 0 26px}
+h1 em{font-style:normal;color:#e1ac6e}
+p{font:400 25px/1.42 'Geologica',sans-serif;margin:0;color:#ebe6dc}
+p span{color:#9ba1ab}
+.where{margin-top:34px;font:400 17px/1 'Martian Mono',monospace;color:#e1ac6e;white-space:nowrap}
+h1{white-space:nowrap}
+</style>
+</head>
+<body>
+<div id="map"></div>
+<div class="words">
+  <div class="kicker">A mod for Claude Code</div>
+  <h1>Lot Map<br>for <em>Claude Code</em></h1>
+  <p>A live map of what your AI agent is doing. <span>Local only, names only.</span></p>
+  <div class="where">alexeyw.github.io/lot-map</div>
+</div>
+<script type="module">
+import { drawMap } from '../../lot-map/mod/draw.js'
+import { setupFrom } from '../../lot-map/mod/setup.js'
+import { T0, boardAt } from '../../lot-map/session.js'
+
+// The network and the model at work, a failed test on the shell, a route behind them.
+const AT = 11_300
+const setup = setupFrom({ theme: 'dark', memoryServers: 'notes' })
+const box = document.getElementById('map')
+box.innerHTML = drawMap(boardAt(AT, setup).board, T0 + AT, setup)
+const svg = box.querySelector('svg')
+svg.removeAttribute('width')
+svg.removeAttribute('height')
+// Held a moment into the pulses, so they are on their way and not at the centre.
+svg.pauseAnimations()
+svg.setCurrentTime(0.45)
+document.fonts.ready.then(() => document.body.setAttribute('data-ready', ''))
+</script>
+</body>
+</html>
