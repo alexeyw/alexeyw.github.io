@@ -359,7 +359,7 @@ CASES = [
                        'Pull request от сторонних участников слито: {{lot_outside}}; каждый сначала прочитан и запущен. Среди них исправление путей Windows, исправление, которое не пустило текст запроса в подпись, и подписи ещё на двух языках.',
                        'Не делает сетевых запросов, не читает файлы и не запускает процессы; проверка на каждом pull request сверяет его со списком того, что он вызывает. Языков подписей: {{lot_langs}}.']},
      'ev': [('stars', '{{lot_stars}}'), ('forks', '{{lot_forks}}'), ('prs', '{{lot_prs}}'), ('commits', '{{lot_commits}}'), ('latest', '{{lot_release}}'), ('license', 'MIT')],
-     'links': [('GitHub', LOT), ('Windows fix', LOT + '/pull/11'), ('Audit fixes', LOT + '/pull/6'), ('Query-text fix', LOT + '/pull/29'), ('Principles', LOT + '/blob/main/PRINCIPLES.md')],
+     'links': [('GitHub', LOT), ('Replay in the browser', SITE + 'lot-map/'), ('Windows fix', LOT + '/pull/11'), ('Audit fixes', LOT + '/pull/6'), ('Query-text fix', LOT + '/pull/29'), ('Principles', LOT + '/blob/main/PRINCIPLES.md')],
      'shots': [('lotmap-working.webp', 520, 866, {'en': 'Files are being read', 'es': 'Se leen archivos', 'ru': 'Читаются файлы'}),
                ('lotmap-agents.webp', 520, 866, {'en': 'Subagents at work', 'es': 'Subagentes trabajando', 'ru': 'Работают подагенты'}),
                ('lotmap-light.webp', 520, 866, {'en': 'Light theme', 'es': 'Tema claro', 'ru': 'Светлая тема'})]},
