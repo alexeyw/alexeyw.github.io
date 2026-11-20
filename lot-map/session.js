@@ -29,6 +29,8 @@ export const SESSION = [
   { at: 14700, kind: 'call', dur: 500, agent: 'a1', tool: 'Bash', input: { command: 'git diff --stat HEAD' } },
   { at: 15300, kind: 'call', dur: 400, agent: 'a1', tool: 'Read', input: { file_path: '/Users/dana/orders-api/src/auth/session.ts' } },
   { at: 15800, kind: 'step', dur: 2400, agent: 'a1' },
+  // The subagent's loop is over: in the mod its `turn.complete` takes it off the Agents station.
+  { at: 18200, kind: 'left', agent: 'a1' },
   { at: 18500, kind: 'step', dur: 1000, context: 31 },
   { at: 19500, kind: 'refusal', tool: 'Bash', input: { command: 'rm -rf build && npm run build' } },
   { at: 20100, kind: 'step', dur: 900, context: 32 },
@@ -83,10 +85,15 @@ export function boardAt(time, setup) {
       handedChars += JSON.stringify(e.input).length
       keptChars += seen.label.length
     } else if (e.kind === 'refusal') {
-      const row = add({ station: 'hooks', label: t.stopped(e.tool), status: 'block' }, e, i)
+      // As in the mod: the call a hook refused keeps its own row, marked as stopped, and the hook gets a row beside it.
+      const seen = classify(e.tool, e.input, setup)
+      const row = add({ ...seen, status: 'block' }, e, `${i}c`)
+      add({ station: 'hooks', label: t.stopped(e.tool), status: 'block' }, e, i)
       handed = { tool: e.tool, input: e.input, row, isRefused: true }
       handedChars += JSON.stringify(e.input).length
-      keptChars += e.tool.length
+      keptChars += seen.label.length
+    } else if (e.kind === 'left') {
+      board.agents = board.agents.filter(id => id !== e.agent)
     } else if (e.kind === 'done') {
       add({ station: 'you', label: t.answerReady, mark: 'done' }, e, i)
     }
