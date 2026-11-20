@@ -99,6 +99,9 @@ function restyle() {
   const p = state.theme === 'light' ? LIGHT : DARK
   for (const [name, value] of Object.entries(p)) pane.style.setProperty(`--p-${name}`, value)
   pane.dataset.theme = state.theme
+  // The rows' colours are the surface's, not the map's: Claude Code's own blue for a running row, its dimmed text for a finished one.
+  pane.style.setProperty('--row-run', state.theme === 'light' ? '#1457b0' : '#4782c8')
+  pane.style.setProperty('--row-ok', state.theme === 'light' ? '#888c91' : '#727780')
   $('pane-title').textContent = setup.t.title
   state.drawnAt = -1
   draw()

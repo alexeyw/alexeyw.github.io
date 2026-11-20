@@ -83,7 +83,7 @@ h1 em{font-style:normal;color:var(--accent)}
 .stage{display:grid;grid-template-columns:minmax(0,460px) minmax(0,1fr);gap:20px;align-items:start}
 
 /* The pane: painted with the mod's own palette for the chosen theme, set from replay.js. */
-.pane{--p-ground:#0a0c11;--p-line:#272c36;--p-bone:#ebe6dc;--p-ash:#9ba1ab;--p-dim:#6b7280;--p-accent:#e1ac6e;--p-red:#e8654f;
+.pane{--p-ground:#0a0c11;--p-line:#272c36;--p-bone:#ebe6dc;--p-ash:#9ba1ab;--p-dim:#6b7280;--p-accent:#e1ac6e;--p-red:#e8654f;--row-run:#4782c8;--row-ok:#727780;
   background:var(--p-ground);color:var(--p-bone);border:1px solid var(--p-line);border-radius:14px;overflow:hidden}
 .pane-bar{display:flex;align-items:center;justify-content:space-between;padding:9px 14px;border-bottom:1px solid var(--p-line);font:500 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--p-ash)}
 .pane-bar i{font-style:normal;color:var(--p-dim);letter-spacing:0;text-transform:none}
@@ -92,13 +92,15 @@ h1 em{font-style:normal;color:var(--accent)}
 .progress{height:2px;background:var(--p-line)}
 .progress div{height:100%;background:var(--p-accent);transform-origin:left;transform:scaleX(0)}
 .feed{padding:10px 14px 14px;font:400 11.5px/1.7 var(--mono);font-stretch:87.5%}
-#now{color:var(--p-bone);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-bottom:4px;margin-bottom:4px;border-bottom:1px solid var(--p-line)}
+#now{color:var(--p-bone);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:10px}
 #rows{height:calc(16 * 1.7em);overflow:hidden}
 .row{display:flex;gap:10px;white-space:pre}
 .row-what{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis}
 .row-took{flex:0 0 auto;font-variant-numeric:tabular-nums}
-.row.is-ok{color:var(--p-dim)}
-.row.is-run{color:var(--p-accent)}
+/* The rows are drawn by Claude Code in its theme's colours, not in the map's: a running row in the theme's blue, a
+   finished one dimmed. The values are read from the mod's own window shots, docs/map-working.png and docs/map-light.png. */
+.row.is-ok{color:var(--row-ok)}
+.row.is-run{color:var(--row-run)}
 .row.is-fault{color:var(--p-red)}
 
 .side{display:grid;gap:14px;min-width:0}
