@@ -64,6 +64,8 @@ h1 em{font-style:normal;color:var(--accent)}
 .install code::before{content:"> ";color:var(--accent)}
 .btn{font:500 13px/1 var(--mono);border:1px solid var(--edge);background:transparent;border-radius:8px;padding:0 16px;min-height:46px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
 .btn:hover{border-color:var(--accent);color:var(--accent-hot)}
+/* Copy says Copied for a moment: one width for both, so the row beside it does not move. */
+#copy{min-width:7.2em;justify-content:center}
 .btn.solid{background:var(--accent);border-color:var(--accent);color:#14100a}
 .btn.solid:hover{background:var(--accent-hot);border-color:var(--accent-hot);color:#14100a}
 .under{margin:12px 0 0;font:400 12.5px/1.6 var(--mono);color:var(--ash)}
@@ -73,6 +75,8 @@ h1 em{font-style:normal;color:var(--accent)}
 .replay-head h2{font:400 22px/1.25 var(--sans);margin:8px 0 0}
 .controls{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;font:400 12.5px/1 var(--mono)}
 .controls .btn{min-height:36px;padding:0 13px;font-size:12.5px}
+/* Pause and Play are one button: it keeps the width of the longer word, so the row never changes its length and never moves to another line. */
+.controls #play{min-width:6em;justify-content:center}
 .controls select{background:var(--raised);border:1px solid var(--edge);border-radius:8px;min-height:36px;padding:0 10px}
 .controls label{display:inline-flex;align-items:center;gap:7px;color:var(--ash)}
 .controls input[type=checkbox]{accent-color:var(--accent);width:15px;height:15px;margin:0}
