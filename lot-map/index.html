@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lot Map for Claude Code: a live map of what the agent is doing</title>
+<meta name="description" content="Lot Map for Claude Code is an open-source mod that draws a live map of the agent's work in a pane beside the chat. Local only, names only. Try the replay in your browser.">
+<link rel="canonical" href="https://alexeyw.github.io/lot-map/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Lot Map for Claude Code">
+<meta property="og:description" content="A live map of what your AI agent is doing, in a pane beside the chat. Local only, names only.">
+<meta property="og:url" content="https://alexeyw.github.io/lot-map/">
+<meta name="color-scheme" content="dark light">
+<meta name="theme-color" content="#0a0c11" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#fbfaf6" media="(prefers-color-scheme: light)">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<style>
+/* Geologica and Martian Mono, served from this site; SIL Open Font License 1.1 (../assets/fonts/OFL-*.txt). */
+@font-face{font-family:'Geologica';font-style:normal;font-weight:300 500;font-display:swap;src:url(../assets/fonts/geologica-latin.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Geologica';font-style:normal;font-weight:300 500;font-display:swap;src:url(../assets/fonts/geologica-latin-ext.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Geologica';font-style:normal;font-weight:300 500;font-display:swap;src:url(../assets/fonts/geologica-cyrillic.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}
+@font-face{font-family:'Martian Mono';font-style:normal;font-weight:200 600;font-stretch:75% 112.5%;font-display:swap;src:url(../assets/fonts/martian-mono-latin.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Martian Mono';font-style:normal;font-weight:200 600;font-stretch:75% 112.5%;font-display:swap;src:url(../assets/fonts/martian-mono-latin-ext.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Martian Mono';font-style:normal;font-weight:200 600;font-stretch:75% 112.5%;font-display:swap;src:url(../assets/fonts/martian-mono-cyrillic.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}
+
+:root{
+  color-scheme:dark;
+  --ground:#0a0c11;--raised:#12151c;--line:#272c36;--bone:#ebe6dc;--ash:#9ba1ab;--accent:#e1ac6e;--accent-hot:#f0c595;--edge:#3b414d;--red:#e8654f;--mem:#62c7ba;
+  --mono:"Martian Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --sans:"Geologica","Segoe UI",system-ui,-apple-system,sans-serif;
+  --gutter:max(20px,env(safe-area-inset-left,0px));
+}
+@media (prefers-color-scheme:light){
+  :root{color-scheme:light;--ground:#fbfaf6;--raised:#fff;--line:#ddd8cc;--bone:#1b1e25;--ash:#5c626e;--accent:#96591a;--accent-hot:#7a4409;--edge:#c8c2b4;--red:#b93a26;--mem:#16776d}
+}
+*{box-sizing:border-box}
+html{background:var(--ground);scroll-behavior:smooth}
+body{margin:0;background:var(--ground);color:var(--bone);font:400 16px/1.6 var(--sans);-webkit-text-size-adjust:100%}
+a{color:inherit;text-decoration-color:var(--edge);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--accent)}
+button,select,input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 var(--gutter)}
+.kicker{font:500 11px/1.5 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--ash)}
+
+header.top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-top:22px;padding-bottom:22px}
+.brand{font:500 14px/1 var(--mono);letter-spacing:.04em;text-decoration:none}
+.brand b{color:var(--accent);font-weight:500}
+nav.links{display:flex;gap:20px;font:400 13px/1 var(--mono)}
+nav.links a{text-decoration:none;color:var(--ash)}
+nav.links a:hover{color:var(--bone)}
+
+.hero{padding-top:44px;padding-bottom:36px}
+h1{font:300 clamp(34px,6.2vw,64px)/1.04 var(--sans);letter-spacing:-.02em;margin:14px 0 18px}
+h1 em{font-style:normal;color:var(--accent)}
+.lede{font-size:clamp(17px,2.1vw,20px);line-height:1.5;color:var(--bone);max-width:56ch;margin:0}
+.lede span{color:var(--ash)}
+.install{margin-top:30px;display:flex;flex-wrap:wrap;align-items:stretch;gap:10px;max-width:760px}
+.install code{flex:1 1 320px;min-width:0;display:block;font:400 13.5px/1.5 var(--mono);background:var(--raised);border:1px solid var(--line);border-radius:8px;padding:13px 16px;overflow-x:auto;white-space:nowrap}
+.install code::before{content:"> ";color:var(--accent)}
+.btn{font:500 13px/1 var(--mono);border:1px solid var(--edge);background:transparent;border-radius:8px;padding:0 16px;min-height:46px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
+.btn:hover{border-color:var(--accent);color:var(--accent-hot)}
+.btn.solid{background:var(--accent);border-color:var(--accent);color:#14100a}
+.btn.solid:hover{background:var(--accent-hot);border-color:var(--accent-hot);color:#14100a}
+.under{margin:12px 0 0;font:400 12.5px/1.6 var(--mono);color:var(--ash)}
+
+.replay{padding-top:28px;padding-bottom:64px}
+.replay-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:14px 24px;margin-bottom:16px}
+.replay-head h2{font:400 22px/1.25 var(--sans);margin:8px 0 0}
+.controls{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;font:400 12.5px/1 var(--mono)}
+.controls .btn{min-height:36px;padding:0 13px;font-size:12.5px}
+.controls select{background:var(--raised);border:1px solid var(--edge);border-radius:8px;min-height:36px;padding:0 10px}
+.controls label{display:inline-flex;align-items:center;gap:7px;color:var(--ash)}
+.controls input[type=checkbox]{accent-color:var(--accent);width:15px;height:15px;margin:0}
+.stage{display:grid;grid-template-columns:minmax(0,460px) minmax(0,1fr);gap:20px;align-items:start}
+
+/* The pane: painted with the mod's own palette for the chosen theme, set from replay.js. */
+.pane{--p-ground:#0a0c11;--p-line:#272c36;--p-bone:#ebe6dc;--p-ash:#9ba1ab;--p-dim:#6b7280;--p-accent:#e1ac6e;--p-red:#e8654f;
+  background:var(--p-ground);color:var(--p-bone);border:1px solid var(--p-line);border-radius:14px;overflow:hidden}
+.pane-bar{display:flex;align-items:center;justify-content:space-between;padding:9px 14px;border-bottom:1px solid var(--p-line);font:500 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--p-ash)}
+.pane-bar i{font-style:normal;color:var(--p-dim);letter-spacing:0;text-transform:none}
+#map{aspect-ratio:460/430}
+#map svg{display:block;width:100%;height:auto}
+.progress{height:2px;background:var(--p-line)}
+.progress div{height:100%;background:var(--p-accent);transform-origin:left;transform:scaleX(0)}
+.feed{padding:10px 14px 14px;font:400 11.5px/1.7 var(--mono);font-stretch:87.5%}
+#now{color:var(--p-bone);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-bottom:4px;margin-bottom:4px;border-bottom:1px solid var(--p-line)}
+#rows{height:calc(16 * 1.7em);overflow:hidden}
+.row{display:flex;gap:10px;white-space:pre}
+.row-what{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.row-took{flex:0 0 auto;font-variant-numeric:tabular-nums}
+.row.is-ok{color:var(--p-dim)}
+.row.is-run{color:var(--p-accent)}
+.row.is-fault{color:var(--p-red)}
+
+.side{display:grid;gap:14px;min-width:0}
+.card{background:var(--raised);border:1px solid var(--line);border-radius:14px;padding:16px 18px;min-width:0}
+.card h3{margin:0 0 10px;font:500 11px/1.3 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ash)}
+.card pre{margin:0;font:400 12.5px/1.6 var(--mono);white-space:pre-wrap;overflow-wrap:anywhere}
+#handed{color:var(--ash);min-height:calc(9 * 1.6em);max-height:calc(9 * 1.6em);overflow:hidden}
+#kept{color:var(--accent-hot);font-size:15px;min-height:1.6em}
+#tally{margin:10px 0 0;font:400 12px/1.5 var(--mono);color:var(--ash);min-height:1.5em}
+.note{font-size:14.5px;line-height:1.6;color:var(--ash);margin:0}
+.note b{font-weight:400;color:var(--bone)}
+
+section.band{border-top:1px solid var(--line);padding-top:56px;padding-bottom:60px}
+.band h2{font:300 clamp(26px,3.6vw,36px)/1.15 var(--sans);letter-spacing:-.01em;margin:12px 0 26px;max-width:24ch}
+.cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px 32px}
+.cols h3{font:500 16px/1.3 var(--sans);margin:0 0 8px}
+.cols p{margin:0;color:var(--ash);font-size:15px}
+.cols p code,.takes code{font:400 .86em var(--mono);color:var(--bone)}
+table.takes{width:100%;border-collapse:collapse;font-size:15px}
+.takes th{text-align:left;font:500 11px/1.3 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ash);padding:0 16px 10px 0}
+.takes td{padding:11px 16px 11px 0;border-top:1px solid var(--line);vertical-align:top}
+.takes td:first-child{white-space:nowrap}
+.takes td:last-child{color:var(--ash)}
+.scroll{overflow-x:auto}
+.stations{display:flex;flex-wrap:wrap;gap:8px;margin:0;padding:0;list-style:none;font:400 12.5px/1 var(--mono)}
+.stations li{border:1px solid var(--line);border-radius:999px;padding:9px 13px}
+.where{margin-top:26px;color:var(--ash);font-size:15px;max-width:70ch}
+
+footer{border-top:1px solid var(--line);padding-top:26px;padding-bottom:40px;display:flex;flex-wrap:wrap;gap:10px 26px;justify-content:space-between;font:400 12.5px/1.6 var(--mono);color:var(--ash)}
+footer a{color:var(--ash)}
+
+@media (max-width:860px){
+  .stage{grid-template-columns:minmax(0,1fr)}
+  .pane{max-width:520px;width:100%;margin:0 auto}
+  .cols{grid-template-columns:minmax(0,1fr)}
+  nav.links a.wide{display:none}
+}
+@media (max-width:480px){
+  .hero{padding-top:26px}
+  .feed{font-size:10.5px;padding:8px 10px 12px}
+  .takes td:first-child{white-space:normal}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<header class="top wrap">
+  <a class="brand" href="./"><b>lot</b>-map</a>
+  <nav class="links" aria-label="Project">
+    <a href="#replay">Replay</a>
+    <a class="wide" href="https://github.com/alexeyw/lot-map/blob/main/docs/options.md">Options</a>
+    <a class="wide" href="https://github.com/alexeyw/lot-map/blob/main/PRIVACY.md">Privacy</a>
+    <a href="https://github.com/alexeyw/lot-map">GitHub</a>
+  </nav>
+</header>
+
+<main>
+<section class="hero wrap">
+  <div class="kicker">A mod for Claude Code · open source, MIT</div>
+  <h1>Lot Map<br>for <em>Claude Code</em></h1>
+  <p class="lede">A live map of what your AI agent is doing, in a pane beside the chat. Files, shell, network, memory, subagents, skills and hooks light up as they are used. <span>It runs on your machine and sends nothing anywhere.</span></p>
+  <div class="install">
+    <code id="install">/plugin install lot-map --marketplace alexeyw/lot-map</code>
+    <button class="btn" id="copy" type="button">Copy</button>
+    <a class="btn solid" href="https://github.com/alexeyw/lot-map">GitHub</a>
+  </div>
+  <p class="under">Type it in Claude Code. From a shell: claude plugin install lot-map --marketplace alexeyw/lot-map</p>
+</section>
+
+<section class="replay wrap" id="replay">
+  <div class="replay-head">
+    <div>
+      <div class="kicker">Replay · not a video</div>
+      <h2>The mod's own code, drawing a made-up session</h2>
+    </div>
+    <div class="controls">
+      <button class="btn" id="play" type="button" aria-pressed="true">Pause</button>
+      <button class="btn" id="restart" type="button">Restart</button>
+      <select id="language" aria-label="Language of the map">
+        <option value="en">English</option><option value="de">Deutsch</option><option value="es">Español</option><option value="fr">Français</option><option value="it">Italiano</option><option value="pt">Português</option><option value="ru">Русский</option>
+      </select>
+      <select id="theme" aria-label="Colours of the map">
+        <option value="dark">Dark</option><option value="light">Light</option>
+      </select>
+      <label><input type="checkbox" id="motion"> Reduced motion</label>
+    </div>
+  </div>
+  <div class="stage">
+    <div class="pane" id="pane">
+      <div class="pane-bar"><span id="pane-title">Work map</span><i>lot-map 0.12.0</i></div>
+      <div id="map"></div>
+      <div class="progress" aria-hidden="true"><div id="progress"></div></div>
+      <div class="feed">
+        <div id="now"></div>
+        <div id="rows" aria-live="off"></div>
+      </div>
+    </div>
+    <div class="side">
+      <div class="card">
+        <h3>What the mod is handed</h3>
+        <pre id="handed">—</pre>
+      </div>
+      <div class="card">
+        <h3>What it keeps for the row</h3>
+        <pre id="kept">—</pre>
+        <p id="tally"></p>
+      </div>
+      <div class="card">
+        <p class="note"><b>This page runs lot-map's classifier, drawing and row code as released in 0.12.0</b>, with the types stripped and nothing else changed but the file extensions in its imports. Only Claude Code is stood in for: a clock and a list of invented calls. Every path, address, key and name in them is made up.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="band wrap">
+  <div class="kicker">What it takes from a call</div>
+  <h2>Handed everything. Keeps a name.</h2>
+  <div class="scroll">
+  <table class="takes">
+    <thead><tr><th>A call to</th><th>The row says</th><th>Never</th></tr></thead>
+    <tbody>
+      <tr><td>A file</td><td>the last two parts of its path</td><td>the rest of the path, the text read or written</td></tr>
+      <tr><td>A web address</td><td>the host alone</td><td>a login, password, path or query</td></tr>
+      <tr><td>A shell command</td><td>the short description Claude wrote for it, or the command's name</td><td>the command line</td></tr>
+      <tr><td>A search</td><td>the tool's name</td><td>the pattern or the query</td></tr>
+      <tr><td>A memory call</td><td>the tool's name, a record number</td><td>the text or the query</td></tr>
+      <tr><td>A subagent</td><td>the short description it was started with</td><td>its prompt</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="where">Like any mod that follows tool calls, lot-map is handed each call whole. It makes no network requests, reads no files, runs no processes, calls no model and changes no call. The full statement is <a href="https://github.com/alexeyw/lot-map/blob/main/PRIVACY.md">PRIVACY.md</a>, and the list of everything the mod asks of Claude Code is checked on every change by a <a href="https://github.com/alexeyw/lot-map/blob/main/scripts/surface.txt">public test</a>.</p>
+</section>
+
+<section class="band wrap">
+  <div class="kicker">What lights up</div>
+  <h2>Ten stations around the core</h2>
+  <ul class="stations">
+    <li>You</li><li>Model</li><li>Memory</li><li>Files</li><li>Shell</li><li>Network</li><li>Browser</li><li>Agents</li><li>Skills</li><li>Hooks</li>
+  </ul>
+  <div class="cols" style="margin-top:34px">
+    <div><h3>Reads at a glance</h3><p>A pulse runs from the centre to the station at work. A ring shows how full the context is. A failed call and a hook's refusal stay marked until your next message.</p></div>
+    <div><h3>Where it runs</h3><p>The Claude desktop app, VS Code and the terminal. In kitty, Ghostty and iTerm2 3.7.8 or newer the terminal shows the map as a picture; anywhere else, in braille dots or as rows.</p></div>
+    <div><h3>Yours to set</h3><p>Seven languages, light and dark, your own colours, which tools count as memory, which MCP server sits on which station. <a href="https://github.com/alexeyw/lot-map/blob/main/docs/options.md">Every option with a picture</a>.</p></div>
+  </div>
+</section>
+</main>
+
+<footer class="wrap">
+  <span>lot-map · MIT · made by <a href="../">Aleksei Volodin</a>, code written by his AI agent under his direction</span>
+  <span><a href="https://github.com/alexeyw/lot-map">Source</a> · <a href="https://github.com/alexeyw/lot-map/blob/main/CHANGELOG.md">Changelog</a> · <a href="https://github.com/alexeyw/lot-map/issues">Issues</a></span>
+</footer>
+<script type="module" src="replay.js"></script>
+</body>
+</html>
