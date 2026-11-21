@@ -1,4 +1,4 @@
-// lot-map v0.12.0, hooks/palette.ts with its types stripped and .js added to its imports; nothing else changed. MIT, github.com/alexeyw/lot-map
+// lot-map v0.12.1, hooks/palette.ts with its types stripped and .js added to its imports; nothing else changed. MIT, github.com/alexeyw/lot-map
 // The map's colors: the dark and the light palette, the rules that turn one into the other, and the names a person writes for them.
 
                        

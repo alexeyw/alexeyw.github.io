@@ -1,4 +1,4 @@
-// lot-map v0.12.0, hooks/setup.ts with its types stripped and .js added to its imports; nothing else changed. MIT, github.com/alexeyw/lot-map
+// lot-map v0.12.1, hooks/setup.ts with its types stripped and .js added to its imports; nothing else changed. MIT, github.com/alexeyw/lot-map
 // What the map is made of and what the person set: the stations, and the mod's options made ready to use.
 // Nothing here touches the engine.
                                          
@@ -85,6 +85,9 @@ function cellShapeFrom(value         )         {
 /** The stations an MCP server may be put on. Memory has `memoryServers`; the model and the hooks are not where a tool runs. */
 const SERVER_STATIONS                       = ['files', 'shell', 'web', 'browser', 'agents', 'skills', 'you']
 
+/** An on-off option: `true` or `false`, or either word as a string, as a settings file written by hand may hold it. Anything else keeps the default. */
+const flag = (v         , byDefault         )          => (v === true || v === 'true' ? true : v === false || v === 'false' ? false : byDefault)
+
 const list = (v         )           =>
   (Array.isArray(v) ? v : typeof v === 'string' ? v.split(',') : []).map(x => String(x).trim()).filter(x => x !== '')
 
@@ -110,12 +113,12 @@ export function setupFrom(options                                    = {})      
     memoryPaths: list(options.memoryPaths),
     memoryLabels,
     serverStations,
-    hookRecords: options.hookRecords === true,
-    hookReasons: options.hookReasons === true,
-    guardedHooks: !(options.guardedHooks === false || options.guardedHooks === 'false'),
-    openAtStart: options.openAtStart !== false,
-    subagentNames: options.subagentNames === true,
-    contextCost: options.contextCost === true,
+    hookRecords: flag(options.hookRecords, false),
+    hookReasons: flag(options.hookReasons, false),
+    guardedHooks: flag(options.guardedHooks, true),
+    openAtStart: flag(options.openAtStart, true),
+    subagentNames: flag(options.subagentNames, false),
+    contextCost: flag(options.contextCost, false),
     contextWindow: options.contextWindow === 'compaction' ? 'compaction' : 'model',
     theme: options.theme === 'dark' || options.theme === 'light' ? options.theme : 'auto',
     background: options.background === 'transparent' ? 'transparent' : 'solid',
