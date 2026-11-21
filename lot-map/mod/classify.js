@@ -1,4 +1,4 @@
-// lot-map v0.13.0, hooks/classify.ts with its types stripped and .js added to its imports; nothing else changed. MIT, github.com/alexeyw/lot-map
+// lot-map v0.13.1, hooks/classify.ts with its types stripped and .js added to its imports; nothing else changed. MIT, github.com/alexeyw/lot-map
 // Which station an action belongs to and what to call it: a name, never content.
 // Nothing here touches the engine.
                                          
