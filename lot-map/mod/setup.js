@@ -1,7 +1,8 @@
-// lot-map v0.12.1, hooks/setup.ts with its types stripped and .js added to its imports; nothing else changed. MIT, github.com/alexeyw/lot-map
+// lot-map v0.13.0, hooks/setup.ts with its types stripped and .js added to its imports; nothing else changed. MIT, github.com/alexeyw/lot-map
 // What the map is made of and what the person set: the stations, and the mod's options made ready to use.
 // Nothing here touches the engine.
                                          
+import { clean } from './classify.js'
 import { COLOR_NAMES } from './palette.js'
                                         
 import { stringsFor } from './text.js'
@@ -40,6 +41,8 @@ function ring(x        , y        , r        )         {
                                            
                                                                                                                            
                                                 
+                                                                                                                                
+                                                 
                       
                                                                                                
                       
@@ -97,13 +100,20 @@ export function setupFrom(options                                    = {})      
     const at = pair.indexOf('=')
     if (at > 0 && at < pair.length - 1) memoryLabels.set(pair.slice(0, at).trim(), pair.slice(at + 1).trim())
   }
-  const serverStations = new Map                   ()
-  for (const pair of list(options.serverStations)) {
-    const at = pair.indexOf('=')
-    const station = SERVER_STATIONS.find(id => id === pair.slice(at + 1).trim())
-    if (at > 0 && station !== undefined) serverStations.set(pair.slice(0, at).trim(), station)
+  // A server and a command are put on a station the same way: `name=station`, and an unknown station counts as not set.
+  const stationsFrom = (value         )                         => {
+    const chosen = new Map                   ()
+    for (const pair of list(value)) {
+      const at = pair.indexOf('=')
+      const station = SERVER_STATIONS.find(id => id === pair.slice(at + 1).trim())
+      if (at > 0 && station !== undefined) chosen.set(pair.slice(0, at).trim(), station)
+    }
+    return chosen
   }
-  const core = typeof options.coreName === 'string' ? options.coreName.trim().slice(0, 10) : ''
+  const serverStations = stationsFrom(options.serverStations)
+  const commandStations = stationsFrom(options.commandStations)
+  // The name is drawn as text on every surface: cleaned like a label, and cut by whole characters.
+  const core = typeof options.coreName === 'string' ? [...clean(options.coreName)].slice(0, 10).join('').trim() : ''
   return {
     t: stringsFor(options.language),
     core: core === '' ? 'CLAUDE' : core,
@@ -113,6 +123,7 @@ export function setupFrom(options                                    = {})      
     memoryPaths: list(options.memoryPaths),
     memoryLabels,
     serverStations,
+    commandStations,
     hookRecords: flag(options.hookRecords, false),
     hookReasons: flag(options.hookReasons, false),
     guardedHooks: flag(options.guardedHooks, true),

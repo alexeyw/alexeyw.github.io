@@ -1,4 +1,4 @@
-// lot-map v0.12.1, hooks/feed.ts with its types stripped and .js added to its imports; nothing else changed. MIT, github.com/alexeyw/lot-map
+// lot-map v0.13.0, hooks/feed.ts with its types stripped and .js added to its imports; nothing else changed. MIT, github.com/alexeyw/lot-map
 // The rows under the map: what is folded into one, what a background task says of itself, and the line of what runs now.
 // Nothing here touches the engine.
                                                     
