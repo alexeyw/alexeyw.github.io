@@ -1,4 +1,4 @@
-// lot-map v0.13.2, hooks/draw.ts with its types stripped and .js added to its imports; nothing else changed. MIT, github.com/alexeyw/lot-map
+// lot-map v0.14.0, hooks/draw.ts with its types stripped and .js added to its imports; nothing else changed. MIT, github.com/alexeyw/lot-map
 // How the board is drawn: one SVG, the agent in the centre and a station for each kind of work.
 // Nothing here touches the engine.
                                                        
