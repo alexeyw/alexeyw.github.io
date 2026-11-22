@@ -1,4 +1,4 @@
-// lot-map v0.13.1, hooks/draw.ts with its types stripped and .js added to its imports; nothing else changed. MIT, github.com/alexeyw/lot-map
+// lot-map v0.13.2, hooks/draw.ts with its types stripped and .js added to its imports; nothing else changed. MIT, github.com/alexeyw/lot-map
 // How the board is drawn: one SVG, the agent in the centre and a station for each kind of work.
 // Nothing here touches the engine.
                                                        
@@ -152,8 +152,20 @@ function trail(entries                  , now        , c         , isStill      
   return out
 }
 
+/** How many of the last calls a drawing looks at. */
+export const SHOWN = 40
+
+/**
+ * The calls a drawing looks at: the last ones, and with them every call still running, however long ago it began.
+ * A background task outlives many calls, and its station is at work until it ends, as its row says.
+ */
+export const shownOf = (entries                  )                   => {
+  const from = entries.length - SHOWN
+  return from <= 0 ? entries : entries.filter((e, i) => i >= from || e.status === 'run')
+}
+
               
-                  
+                           
               
              
             
@@ -258,7 +270,7 @@ export function drawMap(board       , now        , setup       )         {
   // How many places the ring is turned. The stations keep their order, so the far side of the person is always the network.
   const shift = setup.layout === 'you-bottom' ? STATIONS.length / 2 : 0
   const core        = { x: CX, y: CY }
-  const recent = board.entries.slice(-40)
+  const recent = shownOf(board.entries)
   // With reduced motion nothing flies, spreads or spins. A call still shows: its spoke flashes and fades, its station
   // lights and cools, the route gets its leg; those only change their opacity. The clock hands stay, as slow as a clock's.
   const isStill = setup.motion === 'reduced'
@@ -293,7 +305,8 @@ export function drawMap(board       , now        , setup       )         {
   const scene        = { entries: recent, board, now, c, names: setup.t.stations, isStill, shift, spent: setup.contextCost ? board.spent : undefined }
   const drawn = STATIONS.map((s, i) => station(s, i, scene))
   body += drawn.map(d => d.under).join('')
-  body += trail(recent, now, c, isStill, shift)
+  // The route is where the work went last: a call left running long ago adds no leg to it.
+  body += trail(board.entries.slice(-SHOWN), now, c, isStill, shift)
 
   /** The two ends of an entry's spoke: where it starts (the core or the agents station) and its own station. */
   const ends = (e       )                 => {

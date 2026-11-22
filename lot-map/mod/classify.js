@@ -1,4 +1,4 @@
-// lot-map v0.13.1, hooks/classify.ts with its types stripped and .js added to its imports; nothing else changed. MIT, github.com/alexeyw/lot-map
+// lot-map v0.13.2, hooks/classify.ts with its types stripped and .js added to its imports; nothing else changed. MIT, github.com/alexeyw/lot-map
 // Which station an action belongs to and what to call it: a name, never content.
 // Nothing here touches the engine.
                                          
@@ -46,7 +46,7 @@ export function cut(text        , max        )         {
  * and paragraphs. The zero-width joiner and non-joiner stay: an emoji of several parts and some scripts are written with them.
  */
 export function clean(label        , max = 120)         {
-  const text = label.replace(/(?:(?![‌‍])[\p{Cc}\p{Cf}\p{Zl}\p{Zp}])+/gu, ' ').replace(/ {2,}/g, ' ').trim()
+  const text = label.replace(/(?:(?![\u200c\u200d])[\p{Cc}\p{Cf}\p{Zl}\p{Zp}])+/gu, ' ').replace(/ {2,}/g, ' ').trim()
   return cut(text, max)
 }
 
@@ -199,7 +199,9 @@ const HERE_MARK = /<<(-?)\s*\\?(["']?)([A-Za-z_][\w.]*)\2/y
  * A shell line without the text of its here-documents: what stands between `<<WORD` and the line that is `WORD` is
  * written somewhere, not run. One that never ends is text to the end. `<<<` is a here-string and `((a << b))` is
  * arithmetic: neither opens one. Nor does a `<<` inside quotes or in a comment: `grep "cout << value" f` opens
- * nothing, and the lines after it are read.
+ * nothing, and the lines after it are read. A `$( )` or a pair of backticks inside double quotes is a command of its
+ * own, with quotes of its own, and a `<<` there opens one: `git commit -m "$(cat <<'EOF' ... EOF)"` is how Claude
+ * Code writes a commit's message, and that message is text.
  * One handed to a shell that was given no script (`bash <<EOF`, `sudo sh -s <<EOF`) is that shell's script: its
  * lines stay, as commands.
  * The line is gone through once: each of its lines outside a here-document character by character, as far as will be
@@ -209,8 +211,11 @@ function withoutHereDocuments(command        )         {
   if (!command.includes('<<')) return command
   const kept           = []
   const waiting                                                    = []
-  // The quote left open by the lines before: a text in quotes may run over several lines.
-  let quote                       = ''
+  // What the lines before left open, the innermost last: a text in quotes may run over several lines, and inside
+  // double quotes a `$(` or a backtick begins a command, closed by its `)` or by the next backtick.
+  const opened                                  = []
+  // How many `(` stand open in each `$( )`, its own aside.
+  const nested           = []
   // How much is kept so far. Past what is read nothing counts, and nothing more is looked at.
   let size = 0
   for (const line of command.split('\n')) {
@@ -232,17 +237,38 @@ function withoutHereDocuments(command        )         {
     const room = Math.min(line.length, READ - size)
     for (let i = 0; i < room; i++) {
       const c = line[i]
+      const quote = opened[opened.length - 1]
       if (quote === "'") {
-        if (c === "'") quote = ''
+        if (c === "'") opened.pop()
       } else if (c === '\\') i++
-      else if (quote !== '') {
-        if (c === (quote === '$' ? "'" : '"')) quote = ''
-      } else if (c === '"' || c === "'") quote = c
+      else if (quote === '$') {
+        if (c === "'") opened.pop()
+      } else if (quote === '"') {
+        if (c === '"') opened.pop()
+        else if (c === '`' || (c === '$' && line[i + 1] === '(')) {
+          // A command of its own begins: a mark in it is a mark, and the command it stands in begins here.
+          opened.push(c === '`' ? '`' : ')')
+          if (c === '$') {
+            nested.push(0)
+            i++
+          }
+          from = i + 1
+          isRun = undefined
+        }
+      } else if (c === '"' || c === "'") opened.push(c)
       else if (c === '$' && line[i + 1] === "'") {
-        quote = '$'
+        opened.push('$')
         i++
       } else if (c === '#' && (i === 0 || /\s/.test(line[i - 1] ?? ''))) break
-      else if (c === ';' || c === '|' || (c === '&' && line[i + 1] !== '>' && !/[<>]/.test(line[i - 1] ?? ''))) {
+      else if (quote === '`' && c === '`') opened.pop()
+      else if (quote === ')' && c === '(') nested[nested.length - 1] = (nested[nested.length - 1] ?? 0) + 1
+      else if (quote === ')' && c === ')') {
+        if ((nested[nested.length - 1] ?? 0) > 0) nested[nested.length - 1] = (nested[nested.length - 1] ?? 0) - 1
+        else {
+          opened.pop()
+          nested.pop()
+        }
+      } else if (c === ';' || (c === '|' && line[i - 1] !== '>') || (c === '&' && line[i + 1] !== '>' && !/[<>]/.test(line[i - 1] ?? ''))) {
         from = i + 1
         isRun = undefined
       } else if (c === '<' && line[i + 1] === '<') {
@@ -367,7 +393,8 @@ function pieces(line        , deep         , powershell         , ends          
       i--
     } else if (c === '(' && inside === '' && !powershell && top.text.endsWith('=') && BEFORE_AN_ARRAY.test(top.text.slice(-ARRAY_NAME_ROOM)))
       open.push({ text: '', quote: '', close: ')', array: 0 })
-    else if (c === '\n' || c === ';' || c === '|') cut(top, c)
+    // `>|` writes over a file that `noclobber` guards: a redirection, and no pipe.
+    else if (c === '\n' || c === ';' || (c === '|' && line[i - 1] !== '>')) cut(top, c)
     else if (c === '&' && (next === '&' || !powershell)) {
       // `2>&1` and `&>file` send output somewhere; they end no command.
       if (next !== '&' && (next === '>' || /[<>]/.test(line[i - 1] ?? ''))) top.text += c

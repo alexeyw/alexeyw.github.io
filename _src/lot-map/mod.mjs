@@ -1,5 +1,5 @@
 // Makes the landing's copy of lot-map's own drawing: six files of the mod at one tag, types stripped and `.js` added to
-// their imports, written as browser modules into ../../lot-map/mod/. Run: node mod.mjs [tag] (default v0.13.1).
+// their imports, written as browser modules into ../../lot-map/mod/. Run: node mod.mjs [tag] (default v0.13.2).
 // The files are read with `git show` from the lot-map checkout; its branch and working tree are not touched.
 import { execFileSync } from 'node:child_process'
 import { mkdirSync, writeFileSync } from 'node:fs'
@@ -7,7 +7,7 @@ import { stripTypeScriptTypes } from 'node:module'
 import { homedir } from 'node:os'
 import { fileURLToPath } from 'node:url'
 
-const TAG = process.argv[2] ?? 'v0.13.1'
+const TAG = process.argv[2] ?? 'v0.13.2'
 const REPO = `${homedir()}/ClaudeCodeProjects/lot-map`
 const OUT = fileURLToPath(new URL('../../lot-map/mod/', import.meta.url))
 const FILES = ['classify', 'draw', 'feed', 'palette', 'setup', 'text']
