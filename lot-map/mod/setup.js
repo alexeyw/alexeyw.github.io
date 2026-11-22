@@ -1,4 +1,4 @@
-// lot-map v0.13.2, hooks/setup.ts with its types stripped and .js added to its imports; nothing else changed. MIT, github.com/alexeyw/lot-map
+// lot-map v0.14.0, hooks/setup.ts with its types stripped and .js added to its imports; nothing else changed. MIT, github.com/alexeyw/lot-map
 // What the map is made of and what the person set: the stations, and the mod's options made ready to use.
 // Nothing here touches the engine.
                                          

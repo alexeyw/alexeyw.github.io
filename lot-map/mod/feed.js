@@ -1,4 +1,4 @@
-// lot-map v0.13.2, hooks/feed.ts with its types stripped and .js added to its imports; nothing else changed. MIT, github.com/alexeyw/lot-map
+// lot-map v0.14.0, hooks/feed.ts with its types stripped and .js added to its imports; nothing else changed. MIT, github.com/alexeyw/lot-map
 // The rows under the map: what is folded into one, what a background task says of itself, and the line of what runs now.
 // Nothing here touches the engine.
                                                     
@@ -73,6 +73,13 @@ export function foldRows(entries                  , max = LIST_ROWS, apart = fal
   }
   return running.length === 0 ? rows : [...rows.slice(0, max - running.length), ...running]
 }
+
+/**
+ * The tools of Claude Code that can start work which goes on after they answer. Any other tool's answer is not read
+ * for a task: a server's own tool may answer with a field of the same name, no notification will ever close its row,
+ * and the word in that field is the server's, not an id of Claude Code's.
+ */
+export const TASK_TOOLS                      = new Set(['Bash', 'PowerShell', 'Agent', 'Task', 'Workflow', 'Monitor', 'Skill'])
 
 /**
  * The id of the background task a tool's answer started, if it started one: a shell command sent to the
