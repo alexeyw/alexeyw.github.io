@@ -1,4 +1,4 @@
-// lot-map v0.14.0, hooks/text.ts with its types stripped and .js added to its imports; nothing else changed. MIT, github.com/alexeyw/lot-map
+// lot-map v0.14.1, hooks/text.ts with its types stripped and .js added to its imports; nothing else changed. MIT, github.com/alexeyw/lot-map
 // Every word the map shows, in each language it speaks.
 // A new language is one more table here and one more value of `language` in plugin.json.
                                          
