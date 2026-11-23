@@ -1,7 +1,7 @@
 {
-  "checked": "2026-11-22",
+  "checked": "2026-11-23",
   "facts": {
-    "stars": 59,
+    "stars": 60,
     "forks": 10,
     "release": "0.15.0",
     "releases": 22,
@@ -39,8 +39,8 @@
       "Room",
       "WorkManager"
     ],
-    "lot_stars": 1127,
-    "lot_forks": 119,
+    "lot_stars": 1136,
+    "lot_forks": 120,
     "lot_prs": 133,
     "lot_commits": 135,
     "lot_outside": 24,
